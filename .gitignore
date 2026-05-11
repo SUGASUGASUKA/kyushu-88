@@ -1,0 +1,17 @@
+# Python
+*.py
+*.json
+!webapp/*.json
+!vercel.json
+
+# ローカル作業ファイル
+memo.txt
+.claude/
+88onsen_data.json
+
+# Chrome拡張（別管理）
+onsen-extension/
+
+# デザインプレビュー（デプロイ不要）
+design-kit-preview.html
+webapp/create-icons.html
