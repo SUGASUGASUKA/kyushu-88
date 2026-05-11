@@ -1,0 +1,986 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="九州八十八湯">
+  <title>九州八十八湯マップ</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="apple-touch-icon" href="icons/android-chrome-192x192.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;700&family=DM+Sans:wght@400;700&family=M+PLUS+Rounded+1c:wght@400;700&family=Noto+Sans+JP:wght@400;500;700&family=Noto+Serif+JP:wght@400;700&family=Shippori+Mincho:wght@700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <script src="map-config.js"></script>
+  <style>
+    :root {
+      /* Brand colors (map-config.js で上書きされる) */
+      --color-brand:        #8C3A2B;
+      --color-brand-dark:   #5C2418;
+      --color-brand-stroke: #3D1610;
+      --color-brand-bg:     #F0E0D8;
+      --color-done:         #3D5A3E;
+      --color-done-dark:    #1E3320;
+      --color-done-bg:      #D4E8CA;
+      --color-done-hover:   #EFF6EE;
+      /* Surface (FIELD NOTES デフォルト値) */
+      --bg-page:        #F7F3EE;
+      --bg-card:        #FDFAF6;
+      --bg-header:      #2D1B0E;
+      --bg-progress:    #EDE6DA;
+      --bg-nav:         #FAF7F2;
+      /* Text */
+      --text-on-header: #F5EDD8;
+      --text-primary:   #2D1B0E;
+      --text-secondary: #7A6558;
+      --text-muted:     #B0A090;
+      /* Border */
+      --border-card:    #EDE6DA;
+      --border-nav:     #E0D5C5;
+      /* Shape */
+      --radius-card:    10px;
+      --radius-btn:     8px;
+      --radius-popup:   16px;
+      /* Font */
+      --font-heading:   'Shippori Mincho', serif;
+      --font-body:      'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif;
+      /* Toast */
+      --bg-toast:       #2D1B0E;
+      --text-toast:     #F5EDD8;
+      /* Shadow */
+      --shadow-card:    0 1px 3px rgba(45,27,14,0.07);
+      --shadow-popup:   0 4px 28px rgba(45,27,14,0.2);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body {
+      height: 100%;
+      font-family: var(--font-body);
+      background: var(--bg-page);
+    }
+
+    /* ===== ヘッダー ===== */
+    #header {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      height: 64px;
+      background: var(--bg-header);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 16px;
+      z-index: 1000;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.4);
+    }
+    #header-title {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      font-family: var(--font-heading);
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--text-on-header);
+      letter-spacing: 0.08em;
+    }
+    #header-icon { font-size: 22px; }
+
+    /* ===== 進捗セクション ===== */
+    #progress-section {
+      position: fixed;
+      top: 64px; left: 0; right: 0;
+      height: 68px;
+      background: var(--bg-progress);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 10px 16px 10px;
+      gap: 6px;
+      z-index: 999;
+      border-bottom: 1px solid var(--border-card);
+    }
+    #progress-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+    }
+    #progress-hero {
+      display: flex;
+      align-items: baseline;
+      gap: 5px;
+    }
+    /* 数字が主役 */
+    #progress-count {
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--color-brand-dark);
+      line-height: 1;
+      letter-spacing: -0.01em;
+      font-variant-numeric: tabular-nums;
+    }
+    #progress-unit {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--color-brand-dark);
+    }
+    #progress-text {
+      font-size: 13px;
+      color: var(--text-secondary);
+    }
+    #progress-bar-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    #progress-bar-bg {
+      flex: 1;
+      height: 12px;
+      background: rgba(140,58,43,0.15);
+      border-radius: 6px;
+      overflow: hidden;
+    }
+    #progress-bar-fill {
+      height: 100%;
+      background: var(--color-brand);
+      border-radius: 6px;
+      transition: width 0.5s ease;
+      width: 0%;
+    }
+    #progress-pct {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--color-brand);
+      flex-shrink: 0;
+      min-width: 34px;
+      text-align: right;
+    }
+
+    /* ===== 地図 ===== */
+    #map {
+      position: fixed;
+      top: 132px;
+      left: 0; right: 0;
+      bottom: calc(60px + env(safe-area-inset-bottom));
+    }
+
+    /* ===== フローティングボタン ===== */
+    #fab-wrap {
+      position: fixed;
+      right: 14px;
+      bottom: calc(76px + env(safe-area-inset-bottom));
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      z-index: 1000;
+    }
+    .fab {
+      border-radius: 50%;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      transition: transform 0.15s;
+    }
+    .fab:active { transform: scale(0.92); }
+    #btn-locate {
+      width: 72px; height: 72px;
+      background: rgba(253,250,246,0.92);
+      box-shadow: 0 3px 14px rgba(45,27,14,0.28);
+    }
+    #btn-locate svg {
+      width: 24px; height: 24px;
+      stroke: var(--text-primary); fill: none;
+      stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round;
+    }
+    #btn-near {
+      width: 72px; height: 72px;
+      background: var(--bg-header);
+      box-shadow: 0 4px 18px rgba(45,27,14,0.42);
+      flex-direction: column;
+      font-size: 11px;
+      font-weight: 700;
+      line-height: 1.55;
+      font-family: var(--font-body);
+      color: var(--text-on-header);
+      text-align: center;
+    }
+
+    /* ===== ボトムナビ ===== */
+    #bottom-nav {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      height: calc(60px + env(safe-area-inset-bottom));
+      padding-bottom: env(safe-area-inset-bottom);
+      background: var(--bg-nav);
+      display: flex;
+      align-items: stretch;
+      justify-content: space-around;
+      border-top: 1px solid var(--border-nav);
+      z-index: 1000;
+    }
+    .nav-btn {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 6px 20px 4px;
+      color: var(--text-muted);
+      font-size: 10px;
+      font-family: var(--font-body);
+      flex: 1;
+    }
+    .nav-btn.active { color: var(--color-brand); }
+    .nav-btn.active::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 50%;
+      transform: translateX(-50%);
+      width: 32px; height: 2px;
+      background: var(--color-brand);
+      border-radius: 0 0 2px 2px;
+    }
+    .nav-svg {
+      width: 22px; height: 22px;
+      display: block;
+      stroke: currentColor; fill: none;
+      stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round;
+    }
+
+    /* ===== 情報ポップアップ ===== */
+    #popup {
+      display: none;
+      position: fixed;
+      bottom: calc(70px + env(safe-area-inset-bottom));
+      left: 12px; right: 12px;
+      background: var(--bg-card);
+      border-radius: var(--radius-popup);
+      padding: 16px;
+      box-shadow: var(--shadow-popup);
+      z-index: 2000;
+      max-width: 420px;
+      margin: 0 auto;
+      border: 1px solid var(--border-card);
+    }
+    #popup-backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 1999;
+    }
+    #popup-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 6px;
+    }
+    #popup-onsenti { font-size: 12px; font-weight: 700; }
+    #popup-badge {
+      font-size: 10px;
+      padding: 2px 8px;
+      border-radius: 10px;
+      margin-left: 8px;
+      white-space: nowrap;
+    }
+    #popup-close {
+      background: none; border: none;
+      font-size: 18px; color: var(--text-muted);
+      cursor: pointer; padding: 0 0 0 8px; line-height: 1;
+    }
+    #popup-shisetsu {
+      font-size: 15px; font-weight: 700;
+      color: var(--text-primary); margin-bottom: 3px;
+    }
+    #popup-address {
+      font-size: 12px; color: var(--text-secondary); margin-bottom: 12px;
+    }
+    #popup-buttons {
+      display: flex; gap: 8px; margin-bottom: 10px;
+    }
+    .popup-link {
+      flex: 1;
+      padding: 13px 0; min-height: 48px;
+      text-align: center; border-radius: 8px;
+      font-size: 12px; text-decoration: none; font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+    }
+    #btn-detail { background: var(--bg-progress); color: var(--color-brand-dark); }
+    #btn-route  { background: var(--color-done); color: #fff; }
+    #btn-visited {
+      width: 100%;
+      padding: 15px 0; min-height: 52px;
+      border: none; border-radius: 10px;
+      font-size: 14px; font-weight: 700;
+      cursor: pointer;
+      font-family: var(--font-body);
+      letter-spacing: 0.03em;
+    }
+
+    /* ===== スタンプ一覧パネル ===== */
+    #panel {
+      display: none;
+      position: fixed;
+      top: 132px; left: 0; right: 0;
+      bottom: calc(60px + env(safe-area-inset-bottom));
+      background: var(--bg-page);
+      overflow-y: auto;
+      z-index: 900;
+    }
+    #panel-header {
+      padding: 16px 16px 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    #panel-title { font-size: 16px; font-weight: 700; color: var(--text-primary); }
+    #panel-count { font-size: 13px; color: var(--color-done); font-weight: 700; }
+    #panel-filter {
+      padding: 0 16px 12px;
+      display: flex; gap: 8px;
+    }
+    .filter-btn {
+      padding: 7px 16px;
+      border-radius: 20px;
+      border: 1px solid var(--border-card);
+      background: var(--bg-card);
+      font-size: 13px; cursor: pointer;
+      color: var(--text-muted);
+      font-family: var(--font-body);
+    }
+    .filter-btn.active {
+      background: var(--color-brand);
+      border-color: var(--color-brand);
+      color: #fff;
+    }
+    .stamp-item {
+      display: flex; align-items: center; gap: 12px;
+      background: var(--bg-card);
+      margin: 0 12px 10px;
+      border-radius: var(--radius-card);
+      padding: 14px 16px;
+      cursor: pointer;
+      box-shadow: var(--shadow-card);
+      border: 1px solid var(--border-card);
+    }
+    .stamp-dot {
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 17px; font-weight: 700; flex-shrink: 0;
+    }
+    .stamp-dot.visited   { background: var(--color-done-bg); color: var(--color-done); }
+    .stamp-dot.unvisited { background: var(--color-brand-bg); color: var(--color-brand); }
+    .stamp-info { flex: 1; min-width: 0; }
+    .stamp-name {
+      font-size: 15px; font-weight: 700; color: var(--text-primary);
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .stamp-sub {
+      font-size: 13px; color: var(--text-secondary); line-height: 1.4;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      margin-top: 3px;
+    }
+
+    /* ===== データ管理パネル ===== */
+    #backup-panel {
+      display: none;
+      position: fixed;
+      top: 64px; left: 0; right: 0;
+      bottom: calc(60px + env(safe-area-inset-bottom));
+      background: var(--bg-page);
+      overflow-y: auto;
+      z-index: 900;
+      padding: 16px;
+    }
+    .backup-section {
+      background: var(--bg-card);
+      border-radius: var(--radius-card);
+      padding: 16px;
+      margin-bottom: 14px;
+      box-shadow: var(--shadow-card);
+      border: 1px solid var(--border-card);
+    }
+    .backup-section-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 8px;
+    }
+    .backup-section-title svg {
+      flex-shrink: 0;
+      color: var(--color-brand-dark);
+    }
+    .backup-section-sub {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 8px;
+      margin-top: 4px;
+    }
+    .backup-section-desc {
+      font-size: 11px;
+      color: var(--text-secondary);
+      margin-bottom: 12px;
+      line-height: 1.7;
+    }
+    /* コード表示欄（読み取り専用）*/
+    .code-box {
+      background: var(--bg-progress);
+      border: 1px solid var(--border-card);
+      border-radius: var(--radius-btn);
+      padding: 10px 12px;
+      font-size: 12px;
+      font-family: 'Courier New', monospace;
+      color: var(--text-primary);
+      word-break: break-all;
+      margin-bottom: 8px;
+      min-height: 38px;
+      line-height: 1.6;
+      user-select: all;
+      -webkit-user-select: all;
+      cursor: text;
+    }
+    /* コード入力欄（ペースト用）*/
+    .code-input {
+      width: 100%;
+      background: #fff;
+      border: 1.5px solid var(--border-card);
+      border-radius: var(--radius-btn);
+      padding: 12px 14px;
+      font-size: 13px;
+      font-family: var(--font-body);
+      color: var(--text-primary);
+      resize: none;
+      height: 52px;
+      margin-bottom: 8px;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    .code-input:focus {
+      border-color: var(--color-brand-dark);
+      outline: none;
+      box-shadow: 0 0 0 3px var(--color-brand-bg);
+    }
+    .code-input::placeholder { color: var(--text-muted); }
+    .backup-btn {
+      display: block;
+      width: 100%;
+      padding: 10px 0;
+      border-radius: var(--radius-btn);
+      border: 1px solid var(--border-card);
+      background: var(--bg-progress);
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--color-brand-dark);
+      cursor: pointer;
+      text-align: center;
+      margin-bottom: 8px;
+      font-family: var(--font-body);
+    }
+    .backup-btn.primary {
+      background: var(--color-done);
+      color: #fff;
+      border-color: var(--color-done);
+    }
+    /* 破壊的操作ボタン */
+    .btn-destructive {
+      display: block;
+      width: 100%;
+      padding: 12px 0;
+      border-radius: 8px;
+      border: 1.5px solid #C0392B;
+      background: transparent;
+      font-size: 13px;
+      font-weight: 700;
+      color: #C0392B;
+      cursor: pointer;
+      text-align: center;
+      margin-bottom: 4px;
+      font-family: var(--font-body);
+      transition: background 0.15s;
+    }
+    .btn-destructive:active { background: rgba(192,57,43,0.06); }
+    .destructive-note {
+      font-size: 11px;
+      color: #C0392B;
+      text-align: center;
+      margin-bottom: 8px;
+      opacity: 0.75;
+    }
+    .backup-divider {
+      border: none;
+      border-top: 1px solid var(--border-card);
+      margin: 12px 0;
+    }
+    /* プライバシーノート */
+    .privacy-note {
+      margin: 8px 0 16px;
+      padding: 14px 16px;
+      background: var(--bg-progress);
+      border-radius: var(--radius-card);
+      font-size: 12px;
+      color: var(--text-secondary);
+      line-height: 1.8;
+      text-align: center;
+    }
+
+    /* ===== ホーム追加バナー ===== */
+    #add-banner {
+      display: none;
+      position: fixed;
+      bottom: calc(68px + env(safe-area-inset-bottom));
+      left: 10px; right: 10px;
+      background: #FEF3E8;
+      border: 1px solid #C8A87A;
+      border-radius: 12px;
+      padding: 10px 14px;
+      z-index: 1500;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.12);
+      font-size: 12px;
+      color: #5C3A14;
+      align-items: center;
+      gap: 8px;
+    }
+    #add-banner .banner-icon { font-size: 20px; flex-shrink: 0; }
+    #add-banner .banner-text { flex: 1; line-height: 1.5; }
+    #add-banner .banner-close {
+      background: none; border: none; font-size: 16px;
+      color: #5C3A14; cursor: pointer; padding: 0 0 0 4px; flex-shrink: 0;
+    }
+
+    /* ===== トースト ===== */
+    #toast {
+      display: none;
+      position: fixed;
+      top: 144px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--bg-toast);
+      color: var(--text-toast);
+      padding: 8px 20px;
+      border-radius: 20px;
+      font-size: 13px;
+      z-index: 3000;
+      white-space: nowrap;
+      max-width: calc(100vw - 32px);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+    }
+
+    /* ================================================================
+       テーマ別 構造オーバーライド（[data-kit] セレクター）
+       ================================================================ */
+
+    /* ---- FIELD NOTES: 和紙テクスチャ感・手帳ライン ---- */
+    [data-kit="field-notes"] #header {
+      border-bottom: 3px solid var(--color-brand);
+    }
+    [data-kit="field-notes"] .stamp-item {
+      border-left: 3px solid var(--border-card);
+      transition: border-left-color 0.15s;
+    }
+    [data-kit="field-notes"] .stamp-item:has(.stamp-dot.visited) {
+      border-left-color: var(--color-done);
+    }
+    [data-kit="field-notes"] #progress-bar-bg {
+      height: 10px;
+      border-radius: 4px;
+    }
+    [data-kit="field-notes"] #progress-bar-fill {
+      border-radius: 4px;
+    }
+    [data-kit="field-notes"] .backup-section {
+      border-left: 3px solid var(--color-brand);
+    }
+
+    /* ---- SWISS MINIMAL: 影なし・ライン区切り・大文字 ---- */
+    [data-kit="swiss-minimal"] #header {
+      box-shadow: none;
+      border-bottom: 4px solid var(--color-brand);
+    }
+    [data-kit="swiss-minimal"] .stamp-item {
+      box-shadow: none;
+      border-radius: 0;
+      border: none;
+      border-bottom: 1px solid var(--border-card);
+      margin: 0 0 0 0;
+      padding: 14px 16px;
+    }
+    [data-kit="swiss-minimal"] #panel-list {
+      padding: 0 12px;
+    }
+    [data-kit="swiss-minimal"] #panel-filter {
+      border-bottom: 1px solid var(--border-card);
+      padding-bottom: 10px;
+    }
+    [data-kit="swiss-minimal"] .filter-btn {
+      border-radius: 0;
+      border: 1.5px solid var(--border-card);
+      font-weight: 700;
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 5px 12px;
+    }
+    [data-kit="swiss-minimal"] #progress-bar-bg {
+      height: 4px;
+      border-radius: 0;
+    }
+    [data-kit="swiss-minimal"] #progress-bar-fill {
+      border-radius: 0;
+    }
+    [data-kit="swiss-minimal"] .backup-section {
+      box-shadow: none;
+      border-radius: 0;
+      border: none;
+      border-top: 1.5px solid var(--border-card);
+    }
+    [data-kit="swiss-minimal"] #popup {
+      box-shadow: none;
+      border-radius: 0;
+      border: 1.5px solid var(--border-card);
+    }
+    [data-kit="swiss-minimal"] .nav-btn.active::before {
+      width: 100%;
+      height: 3px;
+      border-radius: 0;
+    }
+
+    /* ---- RETRO TRAVEL: 朱色アクセント・スタンプ判子感 ---- */
+    [data-kit="retro-travel"] #header {
+      border-bottom: 4px double var(--color-brand);
+    }
+    [data-kit="retro-travel"] #progress-section {
+      border-bottom: 2px solid var(--border-nav);
+    }
+    [data-kit="retro-travel"] #progress-bar-bg {
+      height: 12px;
+      border-radius: 0;
+      border: 1px solid var(--border-nav);
+      background: transparent;
+    }
+    [data-kit="retro-travel"] #progress-bar-fill {
+      border-radius: 0;
+    }
+    [data-kit="retro-travel"] .stamp-item {
+      border-left: 4px solid var(--color-brand);
+      border-radius: 0 var(--radius-card) var(--radius-card) 0;
+    }
+    [data-kit="retro-travel"] .stamp-item:has(.stamp-dot.visited) {
+      border-left-color: var(--color-done);
+    }
+    [data-kit="retro-travel"] .filter-btn {
+      border-radius: 0;
+      border-width: 1.5px;
+      font-weight: 700;
+    }
+    [data-kit="retro-travel"] .filter-btn.active {
+      outline: 1px solid var(--color-brand);
+      outline-offset: 1px;
+    }
+    [data-kit="retro-travel"] .backup-section {
+      border-left: 4px solid var(--color-brand);
+      border-radius: 0 var(--radius-card) var(--radius-card) 0;
+    }
+
+    /* ---- EXPEDITION: 測量感・コンデンスドタイポ・ターゲット ---- */
+    [data-kit="expedition"] #header {
+      box-shadow: none;
+      border-bottom: 2px solid var(--color-brand);
+      letter-spacing: 0.15em;
+    }
+    [data-kit="expedition"] #header-title {
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      font-size: 17px;
+    }
+    [data-kit="expedition"] #panel-title,
+    [data-kit="expedition"] .backup-section-title {
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      font-size: 12px;
+    }
+    [data-kit="expedition"] .stamp-item {
+      border-top: 2px solid var(--border-card);
+      border-left: none;
+      border-right: none;
+      border-bottom: none;
+      border-radius: 0;
+      background: transparent;
+      box-shadow: none;
+      margin: 0 12px;
+    }
+    [data-kit="expedition"] #panel-list {
+      border-bottom: 1px solid var(--border-card);
+    }
+    [data-kit="expedition"] #progress-bar-bg {
+      height: 10px;
+      border-radius: 0;
+      border: 1px solid var(--color-brand);
+      background: transparent;
+    }
+    [data-kit="expedition"] #progress-bar-fill {
+      border-radius: 0;
+      background: var(--color-brand);
+    }
+    [data-kit="expedition"] .filter-btn {
+      border-radius: 3px;
+      border-width: 1.5px;
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      font-weight: 700;
+    }
+    [data-kit="expedition"] .backup-section {
+      border-radius: 0;
+      border-top: 2px solid var(--color-brand);
+      border-bottom: 1px solid var(--border-card);
+      border-left: none;
+      border-right: none;
+      box-shadow: none;
+      background: transparent;
+    }
+
+    /* ---- POP PILGRIMAGE: グラデ・デカいバー・押すとぷよぷよ ---- */
+    [data-kit="pop-pilgrimage"] #header {
+      background: linear-gradient(135deg, #5B21B6 0%, #9333EA 50%, #EC4899 100%);
+      box-shadow: 0 4px 20px rgba(147,51,234,0.4);
+    }
+    [data-kit="pop-pilgrimage"] #progress-bar-bg {
+      height: 16px;
+      border-radius: 9px;
+      background: rgba(147,51,234,0.12);
+    }
+    [data-kit="pop-pilgrimage"] #progress-bar-fill {
+      border-radius: 8px;
+      background: linear-gradient(90deg, #7C3AED, #EC4899);
+    }
+    [data-kit="pop-pilgrimage"] .stamp-item {
+      box-shadow: 0 4px 14px rgba(147,51,234,0.1);
+      border: 1.5px solid var(--border-card);
+      transition: transform 0.12s, box-shadow 0.12s;
+    }
+    [data-kit="pop-pilgrimage"] .stamp-item:active {
+      transform: scale(0.97);
+      box-shadow: 0 2px 6px rgba(147,51,234,0.08);
+    }
+    [data-kit="pop-pilgrimage"] .filter-btn.active {
+      background: linear-gradient(135deg, #7C3AED, #EC4899);
+      border-color: transparent;
+    }
+    [data-kit="pop-pilgrimage"] #panel {
+      background-image: radial-gradient(circle, rgba(147,51,234,0.06) 1px, transparent 1px);
+      background-size: 20px 20px;
+    }
+    [data-kit="pop-pilgrimage"] #backup-panel {
+      background-image: radial-gradient(circle, rgba(147,51,234,0.06) 1px, transparent 1px);
+      background-size: 20px 20px;
+    }
+    [data-kit="pop-pilgrimage"] .backup-section {
+      box-shadow: 0 4px 16px rgba(147,51,234,0.1);
+      border: 1.5px solid var(--border-card);
+    }
+    [data-kit="pop-pilgrimage"] #popup {
+      box-shadow: 0 8px 40px rgba(147,51,234,0.25);
+    }
+    [data-kit="pop-pilgrimage"] .nav-btn.active::before {
+      background: linear-gradient(90deg, #7C3AED, #EC4899);
+      width: 40px;
+      height: 3px;
+      border-radius: 2px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ヘッダー -->
+  <div id="header">
+    <div id="header-title">
+      <span id="header-icon">♨</span>
+      <span id="header-name">九州八十八湯マップ</span>
+    </div>
+  </div>
+
+  <!-- 進捗バーセクション（地図タブのみ） -->
+  <div id="progress-section">
+    <div id="progress-top">
+      <div id="progress-hero">
+        <span id="progress-count">0</span><span id="progress-unit"> 箇所踏破</span>
+      </div>
+      <span id="progress-text">/ 160 スポット</span>
+    </div>
+    <div id="progress-bar-row">
+      <div id="progress-bar-bg">
+        <div id="progress-bar-fill"></div>
+      </div>
+      <span id="progress-pct">0%</span>
+    </div>
+  </div>
+
+  <!-- 地図 -->
+  <div id="map"></div>
+
+  <!-- フローティングボタン -->
+  <div id="fab-wrap">
+    <button class="fab" id="btn-locate" title="現在地">
+      <svg viewBox="0 0 24 24">
+        <circle cx="12" cy="12" r="7"/>
+        <line x1="12" y1="2" x2="12" y2="5"/>
+        <line x1="12" y1="19" x2="12" y2="22"/>
+        <line x1="2" y1="12" x2="5" y2="12"/>
+        <line x1="19" y1="12" x2="22" y2="12"/>
+        <circle cx="12" cy="12" r="2.5" fill="#2D1B0E" stroke="none"/>
+      </svg>
+    </button>
+    <button class="fab" id="btn-near" title="近くの未訪問温泉">
+      近くの<br>未訪問地
+    </button>
+  </div>
+
+  <!-- ポップアップ背景 -->
+  <div id="popup-backdrop"></div>
+
+  <!-- 情報ポップアップ -->
+  <div id="popup">
+    <div id="popup-header">
+      <div style="flex:1;min-width:0">
+        <div style="display:flex;align-items:center;margin-bottom:2px">
+          <span id="popup-onsenti"></span>
+          <span id="popup-badge"></span>
+        </div>
+        <div id="popup-shisetsu"></div>
+      </div>
+      <button id="popup-close">✕</button>
+    </div>
+    <div id="popup-address"></div>
+    <div id="popup-buttons">
+      <a id="btn-detail" class="popup-link" target="_blank">詳細を見る</a>
+      <a id="btn-route" class="popup-link" target="_blank" rel="noopener">ルート検索</a>
+    </div>
+    <button id="btn-visited"></button>
+  </div>
+
+  <!-- スタンプ一覧パネル -->
+  <div id="panel">
+    <div id="panel-header">
+      <span id="panel-title">スタンプ一覧</span>
+      <span id="panel-count"></span>
+    </div>
+    <div id="panel-filter">
+      <button class="filter-btn active" data-filter="all">すべて</button>
+      <button class="filter-btn" data-filter="unvisited">未訪問</button>
+      <button class="filter-btn" data-filter="visited">訪問済み</button>
+    </div>
+    <div id="panel-list"></div>
+  </div>
+
+  <!-- データ管理パネル（記録タブ） -->
+  <div id="backup-panel">
+    <div class="backup-section">
+      <div class="backup-section-title">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="5" y="2" width="14" height="20" rx="2" ry="2"/>
+          <line x1="12" y1="18" x2="12.01" y2="18" stroke-width="3"/>
+        </svg>
+        機種変・引き継ぎコード
+      </div>
+      <div class="backup-section-desc">
+        コードをコピーして、メモアプリやLINEに保存してください。<br>
+        新しいスマホで貼り付けるだけで記録が戻ります。
+      </div>
+      <div class="code-box" id="transfer-code-box">（読み込み中）</div>
+      <button class="backup-btn primary" id="btn-copy-code">📋 コードをコピー</button>
+      <hr class="backup-divider">
+      <div class="backup-section-sub">コードから復元</div>
+      <textarea class="code-input" id="transfer-code-input" placeholder="引き継ぎコードをここに貼り付け"></textarea>
+      <button class="btn-destructive" id="btn-restore-code">上書き復元する</button>
+      <p class="destructive-note">現在の記録はすべて失われます</p>
+    </div>
+
+    <div class="backup-section">
+      <div class="backup-section-title">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+          <polyline points="7 10 12 15 17 10"/>
+          <line x1="12" y1="15" x2="12" y2="3"/>
+        </svg>
+        JSONファイルバックアップ
+      </div>
+      <div class="backup-section-desc">
+        記録をファイルとして保存・読み込みできます。
+      </div>
+      <button class="backup-btn" id="btn-export">↑ ファイルに書き出す</button>
+      <label class="backup-btn" style="cursor:pointer">
+        ↓ ファイルから読み込む
+        <input type="file" id="btn-import" accept=".json" style="display:none">
+      </label>
+    </div>
+
+    <div class="privacy-note">
+      記録はこのスマートフォンにのみ保存されます。<br>
+      アカウント登録・個人情報の収集はありません。
+    </div>
+  </div>
+
+  <!-- ボトムナビ -->
+  <div id="bottom-nav">
+    <button class="nav-btn active" id="nav-map">
+      <svg class="nav-svg" viewBox="0 0 24 24">
+        <polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/>
+        <line x1="8" y1="2" x2="8" y2="18"/>
+        <line x1="16" y1="6" x2="16" y2="22"/>
+      </svg>
+      <span>地図</span>
+    </button>
+    <button class="nav-btn" id="nav-list">
+      <svg class="nav-svg" viewBox="0 0 24 24">
+        <line x1="9" y1="6" x2="20" y2="6"/>
+        <line x1="9" y1="12" x2="20" y2="12"/>
+        <line x1="9" y1="18" x2="20" y2="18"/>
+        <circle cx="4" cy="6" r="1.5" fill="currentColor" stroke="none"/>
+        <circle cx="4" cy="12" r="1.5" fill="currentColor" stroke="none"/>
+        <circle cx="4" cy="18" r="1.5" fill="currentColor" stroke="none"/>
+      </svg>
+      <span>一覧</span>
+    </button>
+    <button class="nav-btn" id="nav-backup">
+      <svg class="nav-svg" viewBox="0 0 24 24">
+        <polyline points="21 8 21 21 3 21 3 8"/>
+        <rect x="1" y="3" width="22" height="5" rx="1"/>
+        <line x1="10" y1="12" x2="14" y2="12"/>
+      </svg>
+      <span>記録</span>
+    </button>
+  </div>
+
+  <!-- ホーム画面追加バナー -->
+  <div id="add-banner">
+    <span class="banner-icon">📲</span>
+    <span class="banner-text">
+      <b>ホーム画面に追加</b>すると、アプリのように使えます！<br>
+      iPhone: 共有ボタン → 「ホーム画面に追加」<br>
+      Android: メニュー → 「ホーム画面に追加」
+    </span>
+    <button class="banner-close" id="banner-close">✕</button>
+  </div>
+
+  <!-- トースト -->
+  <div id="toast"></div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="onsen-data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

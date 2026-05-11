@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- 背景：墨色角丸正方形（アプリアイコン風） -->
+  <rect width="100" height="100" rx="22" fill="#2D1B0E"/>
+  <!-- 朱色アクセント帯（下部） -->
+  <rect x="0" y="72" width="100" height="28" rx="0" fill="#8C3A2B"/>
+  <rect x="0" y="72" width="100" height="6" fill="#8C3A2B"/>
+  <!-- 角丸を再度クリップ -->
+  <rect width="100" height="100" rx="22" fill="none"/>
+  <!-- 温泉マーク -->
+  <text x="50" y="66" text-anchor="middle" font-size="54" fill="#F5EDD8">♨</text>
+</svg>

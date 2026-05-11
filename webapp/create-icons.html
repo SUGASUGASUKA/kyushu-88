@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>アイコン生成ツール</title>
+  <style>
+    body { font-family: sans-serif; padding: 32px; background: #f5f5f5; }
+    h1 { font-size: 18px; margin-bottom: 24px; }
+    .row { display: flex; gap: 32px; align-items: flex-start; flex-wrap: wrap; }
+    .item { text-align: center; }
+    canvas { display: block; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.2); margin-bottom: 10px; }
+    button {
+      display: block; width: 100%;
+      padding: 10px 0;
+      background: #2D1B0E; color: #F5EDD8;
+      border: none; border-radius: 8px;
+      font-size: 13px; font-weight: 700; cursor: pointer;
+    }
+    button:hover { background: #5C2418; }
+    .note { font-size: 12px; color: #666; margin-top: 24px; line-height: 1.8; }
+    .step { background: #fff; padding: 16px; border-radius: 8px; margin-top: 16px; font-size: 13px; line-height: 2; }
+    .step strong { color: #8C3A2B; }
+  </style>
+</head>
+<body>
+  <h1>🖼 アイコン生成ツール — 巡礼マップ</h1>
+  <div class="row" id="canvases"></div>
+
+  <div class="step">
+    <strong>使い方：</strong><br>
+    1. 下のボタンでそれぞれダウンロード<br>
+    2. ダウンロードしたファイルを <code>webapp/icons/</code> フォルダに置く<br>
+    3. Netlify に再デプロイ
+  </div>
+
+  <p class="note">
+    ※ このファイル自体はデプロイ不要です。ローカルで使うだけのツールです。
+  </p>
+
+  <script>
+    var SIZES = [192, 512];
+    var BG      = '#2D1B0E';
+    var ACCENT  = '#8C3A2B';
+    var TEXT    = '#F5EDD8';
+    var ICON    = '♨';
+
+    function roundRect(ctx, x, y, w, h, r) {
+      ctx.beginPath();
+      ctx.moveTo(x + r, y);
+      ctx.lineTo(x + w - r, y);
+      ctx.arcTo(x + w, y,     x + w, y + r,     r);
+      ctx.lineTo(x + w, y + h - r);
+      ctx.arcTo(x + w, y + h, x + w - r, y + h, r);
+      ctx.lineTo(x + r, y + h);
+      ctx.arcTo(x,     y + h, x,       y + h - r, r);
+      ctx.lineTo(x, y + r);
+      ctx.arcTo(x, y,         x + r,   y,         r);
+      ctx.closePath();
+    }
+
+    function drawIcon(size) {
+      var c   = document.createElement('canvas');
+      c.width = c.height = size;
+      var ctx = c.getContext('2d');
+      var r   = size * 0.22;  // 角丸半径
+
+      // ── 背景（角丸正方形）──
+      ctx.fillStyle = BG;
+      roundRect(ctx, 0, 0, size, size, r);
+      ctx.fill();
+
+      // ── 朱色アクセント帯（下 28%）──
+      var accentY = size * 0.72;
+      ctx.save();
+      roundRect(ctx, 0, 0, size, size, r);
+      ctx.clip();
+      ctx.fillStyle = ACCENT;
+      ctx.fillRect(0, accentY, size, size - accentY);
+      ctx.restore();
+
+      // ── 温泉マーク ──
+      ctx.fillStyle = TEXT;
+      ctx.textAlign    = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.font = 'bold ' + Math.round(size * 0.52) + 'px sans-serif';
+      ctx.fillText(ICON, size / 2, size * 0.44);
+
+      return c;
+    }
+
+    var container = document.getElementById('canvases');
+
+    SIZES.forEach(function(size) {
+      var canvas = drawIcon(size);
+
+      // 表示用に縮小
+      var preview = document.createElement('canvas');
+      var disp    = Math.min(size, 160);
+      preview.width = preview.height = disp;
+      var pctx = preview.getContext('2d');
+      pctx.drawImage(canvas, 0, 0, disp, disp);
+
+      var btn = document.createElement('button');
+      btn.textContent = '⬇ icon-' + size + '.png をダウンロード';
+      btn.addEventListener('click', function() {
+        var a      = document.createElement('a');
+        a.download = 'icon-' + size + '.png';
+        a.href     = canvas.toDataURL('image/png');
+        a.click();
+      });
+
+      var label = document.createElement('div');
+      label.style.cssText = 'font-size:12px;color:#666;margin-bottom:8px;';
+      label.textContent   = size + ' × ' + size + ' px';
+
+      var item = document.createElement('div');
+      item.className = 'item';
+      item.appendChild(label);
+      item.appendChild(preview);
+      item.appendChild(btn);
+      container.appendChild(item);
+    });
+  </script>
+</body>
+</html>

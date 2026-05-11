@@ -1,0 +1,21 @@
+# Netlify HTTP ヘッダー設定
+# アプリファイルはブラウザの HTTP キャッシュを無効化する
+# （サービスワーカーが常に最新ファイルをキャッシュできるようにするため）
+
+/index.html
+  Cache-Control: no-cache, no-store, must-revalidate
+
+/app.js
+  Cache-Control: no-cache, no-store, must-revalidate
+
+/map-config.js
+  Cache-Control: no-cache, no-store, must-revalidate
+
+/onsen-data.js
+  Cache-Control: no-cache, no-store, must-revalidate
+
+/sw.js
+  Cache-Control: no-cache, no-store, must-revalidate
+
+/manifest.json
+  Cache-Control: no-cache, no-store, must-revalidate
