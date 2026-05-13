@@ -12,7 +12,7 @@
   <link rel="apple-touch-icon" href="icons/android-chrome-192x192.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;700&family=DM+Sans:wght@400;700&family=M+PLUS+Rounded+1c:wght@400;700&family=Noto+Sans+JP:wght@400;500;700&family=Noto+Serif+JP:wght@400;700&family=Shippori+Mincho:wght@700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;700&family=Bricolage+Grotesque:wght@400;500;700;800&family=DM+Sans:wght@400;700&family=M+PLUS+Rounded+1c:wght@400;700&family=Noto+Sans+JP:wght@400;500;700&family=Noto+Serif+JP:wght@400;700&family=Shippori+Mincho:wght@700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
   <script src="map-config.js"></script>
   <style>
@@ -585,147 +585,1071 @@
        テーマ別 構造オーバーライド（[data-kit] セレクター）
        ================================================================ */
 
-    /* ---- FIELD NOTES: 和紙テクスチャ感・手帳ライン ---- */
+    /* ================================================================
+       FIELD NOTES — 和紙・記録帳・髪の毛ライン
+       cream #FAF6EE / ink #1F1814 / brand #8C3A2B / muted #A89A8C
+       ================================================================ */
+
+    /* ヘッダー: 56px、和紙クリーム、1px下ライン */
     [data-kit="field-notes"] #header {
-      border-bottom: 3px solid var(--color-brand);
+      height: 56px;
+      background: #FAF6EE;
+      box-shadow: 0 1px 0 rgba(31,24,20,0.7);
+      border-bottom: none;
+      justify-content: flex-start;
+      padding: 0 22px;
+      gap: 10px;
     }
-    [data-kit="field-notes"] .stamp-item {
-      border-left: 3px solid var(--border-card);
-      transition: border-left-color 0.15s;
+    [data-kit="field-notes"] #header-icon { display: none; }
+    [data-kit="field-notes"] #header-name {
+      font-family: 'Shippori Mincho', 'Noto Serif JP', serif;
+      font-size: 17px; font-weight: 500;
+      color: #1F1814; letter-spacing: 0.32em;
+      white-space: nowrap;
     }
-    [data-kit="field-notes"] .stamp-item:has(.stamp-dot.visited) {
-      border-left-color: var(--color-done);
+    [data-kit="field-notes"] #header-title {
+      align-items: baseline; gap: 10px; flex-shrink: 0;
     }
-    [data-kit="field-notes"] #progress-bar-bg {
-      height: 10px;
-      border-radius: 4px;
+    [data-kit="field-notes"] #header-title::after {
+      content: 'KYUSHU 88';
+      font-family: 'Noto Sans JP', sans-serif;
+      font-size: 9px; font-weight: 400;
+      color: #8B7B6E; letter-spacing: 0.28em;
     }
-    [data-kit="field-notes"] #progress-bar-fill {
-      border-radius: 4px;
+    /* 右: 訪問数（JSが #header-stat に data-fn-count をセット） */
+    [data-kit="field-notes"] #header-stat {
+      display: flex; margin-left: auto; align-items: center; flex-shrink: 0;
     }
-    [data-kit="field-notes"] .backup-section {
-      border-left: 3px solid var(--color-brand);
+    [data-kit="field-notes"] #header-ring,
+    [data-kit="field-notes"] #header-stat-text { display: none; }
+    [data-kit="field-notes"] #header-stat::after {
+      content: attr(data-fn-count);
+      font-family: 'Noto Sans JP', sans-serif;
+      font-size: 9px; color: #8B7B6E; letter-spacing: 0.2em;
     }
 
-    /* ---- SWISS MINIMAL: 影なし・ライン区切り・大文字 ---- */
-    [data-kit="swiss-minimal"] #header {
-      box-shadow: none;
-      border-bottom: 4px solid var(--color-brand);
+    /* 進捗セクション: クリーム・"PROGRESS"ラベル・大明朝数字 */
+    [data-kit="field-notes"] #progress-section {
+      top: 56px; height: auto;
+      background: #FAF6EE; border-bottom: none;
+      padding: 14px 22px 12px; gap: 0;
     }
+    [data-kit="field-notes"] #progress-section::before {
+      content: 'PROGRESS';
+      display: block;
+      font-family: 'Noto Sans JP', sans-serif;
+      font-size: 8px; color: #A89A8C; letter-spacing: 0.32em;
+      margin-bottom: 4px;
+    }
+    [data-kit="field-notes"] #progress-top {
+      align-items: flex-end;
+      padding-right: 72px; /* 右の絶対配置ブロック分のスペース */
+    }
+    [data-kit="field-notes"] #progress-hero { align-items: baseline; gap: 6px; }
+    [data-kit="field-notes"] #progress-count {
+      font-family: 'Shippori Mincho', 'Noto Serif JP', serif;
+      font-size: 52px; font-weight: 500;
+      color: #1F1814; line-height: 0.9;
+      letter-spacing: -0.02em; font-variant-numeric: tabular-nums;
+    }
+    [data-kit="field-notes"] #progress-unit { display: none; }
+    [data-kit="field-notes"] #progress-text {
+      font-family: 'Shippori Mincho', 'Noto Serif JP', serif;
+      font-size: 13px; color: #5C4F44; letter-spacing: 0.05em;
+    }
+    /* 右: 残り数（JSが pctEl.textContent を数字に置き換え + data-remain-label をセット） */
+    [data-kit="field-notes"] #progress-pct {
+      position: absolute; right: 22px; top: 14px;
+      display: flex; flex-direction: column; align-items: flex-end;
+      font-family: 'Shippori Mincho', 'Noto Serif JP', serif;
+      font-size: 22px; font-weight: 500; color: #8C3A2B;
+      font-variant-numeric: tabular-nums;
+      min-width: auto; text-align: right; line-height: 1.1; gap: 2px;
+      border: none; box-shadow: none; background: transparent;
+      width: auto; height: auto; border-radius: 0; transform: none;
+    }
+    [data-kit="field-notes"] #progress-pct::before {
+      content: attr(data-remain-label);
+      display: block;
+      font-family: 'Noto Sans JP', sans-serif;
+      font-size: 8px; color: #A89A8C; letter-spacing: 0.32em;
+      font-weight: 400; line-height: 1; font-variant-numeric: normal;
+    }
+
+    /* ルーラー付きプログレスバー（目盛り＋移動ドット） */
+    [data-kit="field-notes"] #progress-bar-row { margin-top: 14px; gap: 0; }
+    [data-kit="field-notes"] #progress-bar-bg {
+      height: 14px; border-radius: 0; overflow: visible; position: relative;
+      background:
+        /* 中央ヘアライン */
+        linear-gradient(to bottom,
+          transparent 6px, rgba(31,24,20,0.35) 6px,
+          rgba(31,24,20,0.35) 7px, transparent 7px),
+        /* 25・50・75% 目盛り */
+        linear-gradient(to right,
+          transparent calc(25% - 0.5px), rgba(31,24,20,0.2) calc(25% - 0.5px),
+          rgba(31,24,20,0.2) calc(25% + 0.5px), transparent calc(25% + 0.5px),
+          transparent calc(50% - 0.5px), rgba(31,24,20,0.2) calc(50% - 0.5px),
+          rgba(31,24,20,0.2) calc(50% + 0.5px), transparent calc(50% + 0.5px),
+          transparent calc(75% - 0.5px), rgba(31,24,20,0.2) calc(75% - 0.5px),
+          rgba(31,24,20,0.2) calc(75% + 0.5px), transparent calc(75% + 0.5px)
+        );
+    }
+    /* 両端の目盛り */
+    [data-kit="field-notes"] #progress-bar-bg::before {
+      content: '';
+      position: absolute; left: 0; top: 0; width: 1px; height: 13px;
+      background: rgba(31,24,20,0.55);
+    }
+    [data-kit="field-notes"] #progress-bar-bg::after {
+      content: '';
+      position: absolute; right: 0; top: 0; width: 1px; height: 13px;
+      background: rgba(31,24,20,0.55);
+    }
+    [data-kit="field-notes"] #progress-bar-fill {
+      height: 100%; background: transparent; border-radius: 0;
+      position: relative; overflow: visible;
+    }
+    /* 進捗位置に動くブランドドット */
+    [data-kit="field-notes"] #progress-bar-fill::after {
+      content: '';
+      position: absolute; right: 0; top: 3px; transform: translateX(50%);
+      width: 8px; height: 8px; background: #8C3A2B; border-radius: 50%;
+    }
+
+    /* 地図: header(56) + progress(~119) */
+    [data-kit="field-notes"] #map { top: 178px; }
+    [data-kit="field-notes"] #panel {
+      top: 178px; background: #FAF6EE;
+      flex-direction: column; overflow: hidden;
+    }
+    [data-kit="field-notes"] #backup-panel { top: 56px; background: #FAF6EE; }
+
+    /* FAB: 44px 円・控えめ */
+    [data-kit="field-notes"] #fab-wrap { gap: 8px; }
+    [data-kit="field-notes"] #btn-locate {
+      width: 44px; height: 44px;
+      background: #FFFDF7; border: 1px solid rgba(31,24,20,0.18);
+      box-shadow: none; backdrop-filter: none; -webkit-backdrop-filter: none;
+    }
+    [data-kit="field-notes"] #btn-locate svg {
+      width: 16px; height: 16px; stroke: #1F1814; stroke-width: 1.4;
+    }
+    [data-kit="field-notes"] #btn-near {
+      width: 44px; height: 44px;
+      background: #1F1814; box-shadow: none;
+      backdrop-filter: none; -webkit-backdrop-filter: none;
+      font-size: 0; /* 既存テキストを非表示 */
+    }
+    /* remainLabel（JS が data-remain-label をセット）を表示 */
+    [data-kit="field-notes"] #btn-near::after {
+      content: attr(data-remain-label);
+      font-family: 'Shippori Mincho', 'Noto Serif JP', serif;
+      font-size: 11px; font-weight: 500; color: #FAF6EE; letter-spacing: 0.04em;
+    }
+
+    /* ボトムナビ: hairline top・明朝JP + サンセリフEN */
+    [data-kit="field-notes"] #bottom-nav {
+      border-top: 1px solid rgba(31,24,20,0.18);
+      background: #FAF6EE; border-radius: 0;
+    }
+    [data-kit="field-notes"] .nav-svg { display: none; }
+    [data-kit="field-notes"] .nav-btn { flex-direction: column; gap: 2px; color: #A89A8C; }
+    [data-kit="field-notes"] .nav-btn span {
+      font-family: 'Shippori Mincho', 'Noto Serif JP', serif;
+      font-size: 14px; letter-spacing: 0.15em; line-height: 1; font-weight: 400;
+    }
+    [data-kit="field-notes"] .nav-btn.active { color: #1F1814; }
+    [data-kit="field-notes"] .nav-btn.active span { font-weight: 600; }
+    [data-kit="field-notes"] .nav-btn.active::before {
+      top: 0; width: 18px; height: 1.5px; background: #1F1814; border-radius: 0;
+    }
+    [data-kit="field-notes"] #nav-map::after    { content: 'MAP'; }
+    [data-kit="field-notes"] #nav-list::after   { content: 'INDEX'; }
+    [data-kit="field-notes"] #nav-backup::after { content: 'DATA'; }
+    [data-kit="field-notes"] .nav-btn::after {
+      font-family: 'Noto Sans JP', sans-serif;
+      font-size: 8px; letter-spacing: 0.28em; color: #A89A8C; line-height: 1;
+    }
+    [data-kit="field-notes"] .nav-btn.active::after { color: #1F1814; }
+
+    /* ポップアップ: 左ブランドライン・Mincho施設名 */
+    [data-kit="field-notes"] #popup {
+      border-radius: 0; border: none;
+      border-left: 1.5px solid #8C3A2B;
+      box-shadow: 0 1px 0 rgba(31,24,20,0.06);
+      background: #FFFDF7;
+    }
+    [data-kit="field-notes"] #popup-number {
+      display: inline;
+      font-family: 'Shippori Mincho', 'Noto Serif JP', serif;
+      font-size: 9px; color: #A89A8C; letter-spacing: 0.18em; margin-right: 8px;
+    }
+    [data-kit="field-notes"] #popup-onsenti {
+      font-family: 'Noto Sans JP', sans-serif; font-size: 9px; letter-spacing: 0.12em;
+    }
+    [data-kit="field-notes"] #popup-shisetsu {
+      font-family: 'Shippori Mincho', 'Noto Serif JP', serif;
+      font-size: 15px; font-weight: 600; letter-spacing: 0.03em; color: #1F1814;
+    }
+    [data-kit="field-notes"] #popup-address {
+      font-family: 'Noto Sans JP', sans-serif;
+      font-size: 10px; color: #8B7B6E; letter-spacing: 0.06em;
+    }
+    [data-kit="field-notes"] #popup-close { color: #A89A8C; }
+    [data-kit="field-notes"] #btn-detail { background: rgba(31,24,20,0.06); color: #1F1814; border-radius: 0; }
+    [data-kit="field-notes"] #btn-route  { border-radius: 0; }
+    [data-kit="field-notes"] #btn-visited { border-radius: 0; }
+
+    /* 一覧パネル: アンダーライン式フィルター + グリッドリスト */
+    [data-kit="field-notes"] #panel-header { display: none; }
+    [data-kit="field-notes"] #panel-filter {
+      display: flex; align-items: baseline; gap: 28px;
+      padding: 16px 22px 12px; flex-shrink: 0; border-bottom: none;
+    }
+    [data-kit="field-notes"] .filter-btn {
+      padding: 0 0 2px; background: transparent;
+      border: none; border-bottom: 1.5px solid transparent; border-radius: 0;
+      color: rgba(31,24,20,0.35);
+      font-family: 'Shippori Mincho', 'Noto Serif JP', serif;
+      font-size: 16px; font-weight: 400;
+      display: flex; align-items: baseline; gap: 6px;
+    }
+    [data-kit="field-notes"] .filter-btn.active {
+      background: transparent; border-bottom-color: #8C3A2B;
+      color: #1F1814; font-weight: 600;
+    }
+    /* フィルター内の件数（JSでspan.fn-filter-countを挿入） */
+    .fn-filter-count { display: none; }
+    [data-kit="field-notes"] .fn-filter-count {
+      display: inline;
+      font-family: 'Noto Sans JP', sans-serif;
+      font-size: 11px; color: inherit; font-variant-numeric: tabular-nums;
+    }
+    [data-kit="field-notes"] #panel-list {
+      flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch;
+      padding: 0 0 calc(60px + env(safe-area-inset-bottom)) 0;
+    }
+    /* アイテム: 3列グリッド（番号 / 施設名 / 済サークル） */
+    [data-kit="field-notes"] .stamp-item {
+      display: grid; grid-template-columns: 48px 1fr auto;
+      align-items: center; gap: 16px;
+      background: transparent; margin: 0; border-radius: 0;
+      padding: 14px 22px; border: none;
+      border-bottom: 1px solid rgba(31,24,20,0.07); box-shadow: none;
+    }
+    [data-kit="field-notes"] .stamp-dot { display: none; }
+    /* 番号カラム: 第/NUM/番 */
+    .fn-num { display: none; }
+    [data-kit="field-notes"] .fn-num {
+      display: flex; flex-direction: column; align-items: flex-start;
+      font-family: 'Shippori Mincho', 'Noto Serif JP', serif; color: #1F1814;
+    }
+    .fn-num-label { display: none; }
+    [data-kit="field-notes"] .fn-num-label {
+      display: block; font-size: 9px; color: #A89A8C;
+      letter-spacing: 0.18em; line-height: 1;
+    }
+    .fn-num-digit { display: none; }
+    [data-kit="field-notes"] .fn-num-digit {
+      display: block; font-size: 20px; line-height: 1.05;
+      font-weight: 500; font-variant-numeric: tabular-nums;
+    }
+    /* 施設情報 */
+    [data-kit="field-notes"] .stamp-name {
+      font-family: 'Shippori Mincho', 'Noto Serif JP', serif;
+      font-size: 15px; font-weight: 600; color: #1F1814; letter-spacing: 0.03em;
+    }
+    [data-kit="field-notes"] .stamp-sub {
+      font-family: 'Noto Sans JP', sans-serif;
+      font-size: 10px; color: #8B7B6E; letter-spacing: 0.06em; margin-top: 3px;
+    }
+    /* 済インジケーター: 訪問済み=朱丸 / 未訪問=ダッシュ */
+    .fn-status { display: none; }
+    [data-kit="field-notes"] .fn-status {
+      display: flex; align-items: center; justify-content: center;
+    }
+    [data-kit="field-notes"] .fn-status.fn-visited {
+      width: 26px; height: 26px; border-radius: 50%;
+      background: #8C3A2B; color: #FFFDF7;
+      font-family: 'Shippori Mincho', 'Noto Serif JP', serif;
+      font-size: 12px; font-weight: 500;
+    }
+    [data-kit="field-notes"] .fn-status.fn-unvisited {
+      font-family: 'Noto Sans JP', sans-serif;
+      font-size: 8px; color: #A89A8C; letter-spacing: 0.18em;
+    }
+
+    /* バックアップパネル */
+    [data-kit="field-notes"] .backup-section {
+      box-shadow: none; border-radius: 0;
+      border: none; border-bottom: 1px solid rgba(31,24,20,0.07);
+    }
+
+    /* トースト */
+    [data-kit="field-notes"] #toast { top: 196px; border-radius: 4px; }
+
+    /* ================================================================
+       SWISS MINIMAL — 白黒赤・バウハウス・エディトリアル
+       ink #0E0E0E / white #FFFFFF / accent #D6442C / gray #8A8A8A
+       ================================================================ */
+
+    /* ヘッダー: 白地・下黒ライン・バイリンガル左揃え */
+    [data-kit="swiss-minimal"] #header {
+      background: #FFFFFF;
+      box-shadow: none;
+      border-bottom: 1px solid #0E0E0E;
+      justify-content: space-between;
+      padding: 0 20px;
+    }
+    [data-kit="swiss-minimal"] #header-title {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 2px;
+    }
+    [data-kit="swiss-minimal"] #header-icon { display: none; }
+    [data-kit="swiss-minimal"] #header-name { display: none; }
+    /* EN主体: ONSEN—88 / KYUSHU */
+    [data-kit="swiss-minimal"] #header-title::before {
+      content: 'ONSEN\2014 88 / KYUSHU';
+      font-family: 'Inter', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      font-size: 9px;
+      font-weight: 600;
+      letter-spacing: 0.3em;
+      color: #0E0E0E;
+    }
+    /* JP副題 */
+    [data-kit="swiss-minimal"] #header-title::after {
+      content: '九州八十八湯巡礼';
+      font-family: 'Noto Sans JP', sans-serif;
+      font-size: 9px;
+      font-weight: 400;
+      color: #8A8A8A;
+      letter-spacing: 0.2em;
+      margin-top: 2px;
+    }
+    /* 右側: 8×8 アクセントスクエア */
+    [data-kit="swiss-minimal"] #header-stat { display: flex; align-items: center; }
+    [data-kit="swiss-minimal"] #header-ring,
+    [data-kit="swiss-minimal"] #header-stat-text { display: none; }
+    [data-kit="swiss-minimal"] #header-stat::after {
+      content: '';
+      display: block;
+      width: 8px; height: 8px;
+      background: #D6442C;
+      flex-shrink: 0;
+    }
+
+    /* 進捗セクション: 白地・エディトリアルテーブル */
+    [data-kit="swiss-minimal"] #progress-section {
+      background: #FFFFFF;
+      border-bottom: 1.5px solid #0E0E0E;
+      height: 80px;
+      padding: 12px 20px;
+      gap: 6px;
+    }
+    [data-kit="swiss-minimal"] #progress-top {
+      justify-content: flex-start;
+      align-items: baseline;
+      gap: 4px;
+      padding-right: 64px; /* PCT絶対配置のためのスペース */
+    }
+    [data-kit="swiss-minimal"] #progress-hero { align-items: baseline; gap: 2px; }
+    [data-kit="swiss-minimal"] #progress-count {
+      font-family: 'Inter', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      font-size: 44px;
+      font-weight: 500;
+      color: #0E0E0E;
+      line-height: 0.9;
+      letter-spacing: -0.04em;
+      font-variant-numeric: tabular-nums;
+    }
+    [data-kit="swiss-minimal"] #progress-unit { display: none; }
+    [data-kit="swiss-minimal"] #progress-text {
+      font-family: 'Inter', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      font-size: 13px;
+      color: #8A8A8A;
+      letter-spacing: -0.01em;
+    }
+    /* PCT: progress-section内で右上に絶対配置 */
+    [data-kit="swiss-minimal"] #progress-pct {
+      position: absolute;
+      right: 20px; top: 12px;
+      min-width: auto;
+      text-align: right;
+      font-family: 'Inter', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      font-size: 18px;
+      font-weight: 500;
+      color: #D6442C;
+      font-variant-numeric: tabular-nums;
+    }
+    [data-kit="swiss-minimal"] #progress-pct::before {
+      content: 'PCT';
+      display: block;
+      font-size: 9px;
+      font-weight: 400;
+      color: #8A8A8A;
+      letter-spacing: 0.2em;
+      font-variant-numeric: normal;
+      margin-bottom: 2px;
+    }
+    [data-kit="swiss-minimal"] #progress-bar-bg {
+      height: 2px;
+      border-radius: 0;
+      background: #EEEEEE;
+    }
+    [data-kit="swiss-minimal"] #progress-bar-fill { border-radius: 0; background: #D6442C; }
+
+    /* 地図: header(64) + progress(80) = 144px */
+    [data-kit="swiss-minimal"] #map { top: 144px; }
+    [data-kit="swiss-minimal"] #panel { top: 144px; }
+    [data-kit="swiss-minimal"] #backup-panel { top: 64px; }
+
+    /* 地図タイルを脱彩色（国土地理院をグレースケールに近づける） */
+    [data-kit="swiss-minimal"] .leaflet-tile-pane {
+      filter: saturate(0.18) brightness(1.06);
+    }
+
+    /* FAB: スクエア・44×44 */
+    [data-kit="swiss-minimal"] #fab-wrap { gap: 8px; }
+    [data-kit="swiss-minimal"] #btn-locate {
+      width: 44px; height: 44px;
+      border-radius: 0;
+      background: #FFFFFF;
+      border: 1px solid #0E0E0E;
+      box-shadow: none;
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
+    }
+    [data-kit="swiss-minimal"] #btn-locate svg {
+      width: 16px; height: 16px;
+      stroke: #0E0E0E; stroke-width: 1.5;
+    }
+    [data-kit="swiss-minimal"] #btn-near {
+      width: 44px; height: 44px;
+      border-radius: 0;
+      background: #D6442C;
+      box-shadow: none;
+      font-family: 'Inter', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      font-size: 8px;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      line-height: 1.2;
+    }
+
+    /* ボトムナビ: フラット・上黒ライン・EN主体バイリンガル */
+    [data-kit="swiss-minimal"] #bottom-nav {
+      border-top: 1px solid #0E0E0E;
+      border-radius: 0;
+      background: #FFFFFF;
+    }
+    [data-kit="swiss-minimal"] .nav-svg { display: none; }
+    [data-kit="swiss-minimal"] .nav-btn {
+      flex-direction: column;
+      gap: 2px;
+      color: #9A9A9A;
+    }
+    [data-kit="swiss-minimal"] .nav-btn span {
+      font-family: 'Noto Sans JP', sans-serif;
+      font-size: 9px;
+      letter-spacing: 0.15em;
+      line-height: 1;
+    }
+    [data-kit="swiss-minimal"] .nav-btn.active { color: #0E0E0E; }
+    [data-kit="swiss-minimal"] .nav-btn.active::before {
+      top: 0; width: 24px; height: 2px;
+      background: #D6442C; border-radius: 0;
+    }
+    [data-kit="swiss-minimal"] #nav-map::after    { content: 'MAP'; }
+    [data-kit="swiss-minimal"] #nav-list::after   { content: 'INDEX'; }
+    [data-kit="swiss-minimal"] #nav-backup::after { content: 'DATA'; }
+    [data-kit="swiss-minimal"] .nav-btn::after {
+      font-family: 'Inter', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      font-size: 9px; font-weight: 600; letter-spacing: 0.25em; color: #9A9A9A;
+    }
+    [data-kit="swiss-minimal"] .nav-btn.active::after { color: #0E0E0E; }
+
+    /* ポップアップ: シャープ・左アクセントライン */
+    [data-kit="swiss-minimal"] #popup {
+      box-shadow: none;
+      border-radius: 0;
+      border: none;
+      border-left: 2px solid #D6442C;
+      background: #FFFFFF;
+    }
+    [data-kit="swiss-minimal"] #popup-number {
+      display: inline;
+      font-family: 'Inter', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      font-size: 9px; font-weight: 400; color: #8A8A8A;
+      letter-spacing: 0.25em; margin-right: 8px;
+    }
+    [data-kit="swiss-minimal"] #popup-onsenti {
+      font-family: 'Inter', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      font-size: 9px; font-weight: 400;
+      letter-spacing: 0.15em; text-transform: uppercase;
+    }
+    [data-kit="swiss-minimal"] #popup-badge {
+      border-radius: 0; font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase;
+    }
+    [data-kit="swiss-minimal"] #popup-shisetsu {
+      font-family: 'Noto Sans JP', sans-serif;
+      font-size: 14px; font-weight: 500; letter-spacing: 0.02em; color: #0E0E0E;
+    }
+    [data-kit="swiss-minimal"] #popup-address {
+      font-family: 'Inter', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      font-size: 9px; color: #8A8A8A; letter-spacing: 0.15em; text-transform: uppercase;
+    }
+    [data-kit="swiss-minimal"] #popup-close { color: #999999; }
+    [data-kit="swiss-minimal"] #btn-detail { background: #F5F5F5; color: #0E0E0E; border-radius: 0; }
+    [data-kit="swiss-minimal"] #btn-route  { border-radius: 0; }
+    [data-kit="swiss-minimal"] #btn-visited { border-radius: 0; }
+
+    /* 一覧パネル: グリッド・タビュラー数字・打消し線 */
     [data-kit="swiss-minimal"] .stamp-item {
       box-shadow: none;
       border-radius: 0;
       border: none;
-      border-bottom: 1px solid var(--border-card);
-      margin: 0 0 0 0;
-      padding: 14px 16px;
+      border-bottom: 1px solid #EEEEEE;
+      margin: 0;
+      padding: 14px 20px;
+      display: grid;
+      grid-template-columns: 52px 1fr 14px;
+      gap: 12px;
+      align-items: center;
     }
-    [data-kit="swiss-minimal"] #panel-list {
-      padding: 0 12px;
+    [data-kit="swiss-minimal"] #panel-list { padding: 0; }
+    [data-kit="swiss-minimal"] .stamp-dot { display: none; }
+    [data-kit="swiss-minimal"] .stamp-num {
+      display: block;
+      font-family: 'Inter', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      font-size: 18px; font-weight: 400;
+      color: #0E0E0E;
+      letter-spacing: -0.02em;
+      font-variant-numeric: tabular-nums;
     }
+    [data-kit="swiss-minimal"] .sw-visited .stamp-num {
+      color: #BBBBBB;
+      text-decoration: line-through;
+    }
+    [data-kit="swiss-minimal"] .stamp-name {
+      font-family: 'Noto Sans JP', sans-serif;
+      font-size: 14px; font-weight: 500; color: #0E0E0E;
+    }
+    [data-kit="swiss-minimal"] .stamp-sub {
+      font-family: 'Inter', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      font-size: 9px; color: #8A8A8A;
+      letter-spacing: 0.18em; text-transform: uppercase; margin-top: 3px;
+    }
+    /* 10×10 スクエアインジケーター */
+    .sw-indicator { display: none; }
+    [data-kit="swiss-minimal"] .sw-indicator {
+      display: block; width: 10px; height: 10px;
+      background: transparent; border: 1px solid #D6442C; flex-shrink: 0;
+    }
+    [data-kit="swiss-minimal"] .sw-indicator.sw-visited {
+      background: #0E0E0E; border-color: #0E0E0E;
+    }
+
+    /* フィルター */
     [data-kit="swiss-minimal"] #panel-filter {
-      border-bottom: 1px solid var(--border-card);
+      border-bottom: 1px solid #EEEEEE;
       padding-bottom: 10px;
     }
     [data-kit="swiss-minimal"] .filter-btn {
       border-radius: 0;
-      border: 1.5px solid var(--border-card);
-      font-weight: 700;
-      font-size: 10px;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
+      border: 1.5px solid #EEEEEE;
+      font-weight: 700; font-size: 10px;
+      letter-spacing: 0.1em; text-transform: uppercase;
       padding: 5px 12px;
+      font-family: 'Inter', 'Helvetica Neue', Helvetica, Arial, sans-serif;
     }
-    [data-kit="swiss-minimal"] #progress-bar-bg {
-      height: 4px;
-      border-radius: 0;
-    }
-    [data-kit="swiss-minimal"] #progress-bar-fill {
-      border-radius: 0;
-    }
-    [data-kit="swiss-minimal"] .backup-section {
-      box-shadow: none;
-      border-radius: 0;
-      border: none;
-      border-top: 1.5px solid var(--border-card);
-    }
-    [data-kit="swiss-minimal"] #popup {
-      box-shadow: none;
-      border-radius: 0;
-      border: 1.5px solid var(--border-card);
-    }
-    [data-kit="swiss-minimal"] .nav-btn.active::before {
-      width: 100%;
-      height: 3px;
-      border-radius: 0;
+    [data-kit="swiss-minimal"] .filter-btn.active {
+      background: transparent;
+      border-color: #D6442C; color: #D6442C;
     }
 
-    /* ---- RETRO TRAVEL: 朱色アクセント・スタンプ判子感 ---- */
-    [data-kit="retro-travel"] #header {
-      border-bottom: 4px double var(--color-brand);
+    /* バックアップセクション */
+    [data-kit="swiss-minimal"] .backup-section {
+      box-shadow: none; border-radius: 0;
+      border: none; border-top: 1.5px solid #EEEEEE;
+      padding: 16px 20px; margin: 0;
     }
-    [data-kit="retro-travel"] #progress-section {
-      border-bottom: 2px solid var(--border-nav);
+    [data-kit="swiss-minimal"] .backup-section-title {
+      font-family: 'Inter', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      font-size: 11px; font-weight: 600;
+      letter-spacing: 0.12em; text-transform: uppercase;
     }
-    [data-kit="retro-travel"] #progress-bar-bg {
-      height: 12px;
+    [data-kit="swiss-minimal"] .backup-btn,
+    [data-kit="swiss-minimal"] .backup-btn.primary,
+    [data-kit="swiss-minimal"] .btn-destructive { border-radius: 0; }
+
+    /* トースト */
+    [data-kit="swiss-minimal"] #toast {
       border-radius: 0;
-      border: 1px solid var(--border-nav);
-      background: transparent;
+      top: 156px; /* 64 header + 80 progress + 12 gap */
+    }
+
+    /* ================================================================
+       RETRO TRAVEL — 旅館しおり・活版印刷・墨と朱
+       cream #F2EBD8 / sumi #181410 / shu #A23A2B / gray #9A8C76
+       ================================================================ */
+
+    /* ヘッダー: 墨黒・明朝タイトル・英字サブタイトル */
+    [data-kit="retro-travel"] #header {
+      height: 76px;
+      background: #181410;
+      box-shadow: none;
+      border-bottom: none;
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: center;
+      gap: 6px;
+      padding: 0 22px;
+    }
+    [data-kit="retro-travel"] #header-title {
+      width: 100%;
+      display: flex; flex-direction: row;
+      align-items: center; justify-content: flex-start; gap: 0;
+    }
+    [data-kit="retro-travel"] #header-icon { display: none; }
+    [data-kit="retro-travel"] #header-name {
+      font-family: 'Shippori Mincho', 'Noto Serif JP', serif;
+      font-size: 17px; font-weight: 500;
+      letter-spacing: 0.28em; color: #F2EBD8;
+    }
+    /* VOL.IIIは削除 */
+    [data-kit="retro-travel"] #header-title::after { content: ''; }
+    /* 2行目: 英字サブタイトル（header-stat を流用） */
+    [data-kit="retro-travel"] #header-stat { display: flex; align-items: center; }
+    [data-kit="retro-travel"] #header-ring,
+    [data-kit="retro-travel"] #header-stat-text { display: none; }
+    [data-kit="retro-travel"] #header-stat::after {
+      content: 'KYUSHU 88 ONSEN PILGRIMAGE';
+      font-family: 'Noto Sans JP', sans-serif;
+      font-size: 9px; color: #A23A2B; letter-spacing: 0.32em;
+    }
+
+    /* 進捗カード: 地図上に浮遊するクリーム帯 */
+    [data-kit="retro-travel"] #progress-section {
+      top: 80px; left: 16px; right: 16px;
+      height: auto;
+      background: #F2EBD8;
+      border: 1.5px solid #181410;
+      border-bottom: none;
+      box-shadow: 3px 3px 0 0 #A23A2B;
+      padding: 10px 14px 12px;
+      gap: 0;
+    }
+    /* ラベル: attr()で map-config.stampLabel から取得（汎用） */
+    [data-kit="retro-travel"] #progress-section::before {
+      content: attr(data-stamp-label);
+      display: block;
+      font-family: 'Barlow Condensed', 'Noto Sans JP', sans-serif;
+      font-size: 8px; color: #7A6B5A; letter-spacing: 0.3em;
+      margin-bottom: 6px;
+    }
+    [data-kit="retro-travel"] #progress-top {
+      justify-content: flex-start; align-items: flex-end;
+      gap: 4px; padding-right: 70px;
+      /* position: relative 削除 → #progress-section が containing block */
+    }
+    [data-kit="retro-travel"] #progress-hero { align-items: baseline; gap: 4px; }
+    [data-kit="retro-travel"] #progress-count {
+      font-family: 'Barlow Condensed', 'Noto Sans JP', sans-serif;
+      font-size: 54px; font-weight: 700;
+      color: #181410; line-height: 0.85;
+      letter-spacing: -0.02em; font-variant-numeric: tabular-nums;
+      text-shadow: 2px 2px 0 #A23A2B; /* 活版ミスレジ */
+    }
+    [data-kit="retro-travel"] #progress-unit { display: none; }
+    [data-kit="retro-travel"] #progress-text {
+      font-family: 'Barlow Condensed', 'Noto Sans JP', sans-serif;
+      font-size: 22px; font-weight: 600; color: #181410;
+      letter-spacing: 0; line-height: 1; font-variant-numeric: tabular-nums;
+    }
+    /* 判子円（%）: 右に絶対配置。JSX準拠: 54px・ダブルボーダー・回転 */
+    [data-kit="retro-travel"] #progress-pct {
+      position: absolute; right: 14px; top: 12px;
+      width: 54px; height: 54px;
+      border-radius: 50%;
+      border: 2.5px solid #A23A2B;
+      box-shadow: inset 0 0 0 1.5px #F2EBD8, inset 0 0 0 3.5px #A23A2B;
+      background: #F2EBD8;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      color: #A23A2B; transform: rotate(-6deg);
+      font-family: 'Barlow Condensed', 'Noto Sans JP', sans-serif;
+      font-size: 14px; font-weight: 800; line-height: 1;
+      gap: 1px; min-width: auto; text-align: center;
+      font-variant-numeric: tabular-nums;
+    }
+    [data-kit="retro-travel"] #progress-pct::before {
+      content: '達成';
+      font-family: 'Shippori Mincho', 'Noto Serif JP', serif;
+      font-size: 8px; font-weight: 700; letter-spacing: 0.1em;
+      line-height: 1; display: block; color: #A23A2B;
+    }
+    /* 目盛り付きプログレスバー */
+    [data-kit="retro-travel"] #progress-bar-bg {
+      height: 6px; border-radius: 0; overflow: visible;
+      background: transparent; margin-top: 12px; position: relative;
+    }
+    [data-kit="retro-travel"] #progress-bar-bg::before {
+      content: '';
+      position: absolute; top: 2px; left: 0; right: 0; height: 2px;
+      background: rgba(24,20,16,0.2);
     }
     [data-kit="retro-travel"] #progress-bar-fill {
+      position: relative; height: 6px; border-radius: 0; background: #A23A2B;
+    }
+
+    /* 地図: ヘッダー直下からフルスクリーン（進捗カードがオーバーレイ） */
+    [data-kit="retro-travel"] #map { top: 76px; bottom: 0; }
+
+    /* 地図タイル: セピア古地図 */
+    [data-kit="retro-travel"] .leaflet-tile-pane {
+      filter: sepia(0.45) saturate(0.6) brightness(1.04);
+    }
+
+    /* FAB: 44px 円 */
+    [data-kit="retro-travel"] #fab-wrap { gap: 8px; }
+    [data-kit="retro-travel"] #btn-locate {
+      width: 44px; height: 44px;
+      background: #F2EBD8; border: 1px solid #181410;
+      box-shadow: none; backdrop-filter: none; -webkit-backdrop-filter: none;
+    }
+    [data-kit="retro-travel"] #btn-locate svg {
+      width: 15px; height: 15px; stroke: #181410; stroke-width: 1.5;
+    }
+    [data-kit="retro-travel"] #btn-near {
+      width: 44px; height: 44px;
+      background: #A23A2B; box-shadow: none;
+      font-size: 0; /* テキストを非表示にして::afterで置き換え */
+    }
+    [data-kit="retro-travel"] #btn-near::after {
+      content: '近湯';
+      font-family: 'Shippori Mincho', 'Noto Serif JP', serif;
+      font-size: 13px; font-weight: 500; color: #F2EBD8;
+    }
+
+    /* ボトムナビ: クリーム・明朝JP（大）+ サンセリフEN（小）・朱アクティブライン */
+    [data-kit="retro-travel"] #bottom-nav {
+      background: #F2EBD8;
+      border-top: 1px solid rgba(24,20,16,0.15);
       border-radius: 0;
     }
-    [data-kit="retro-travel"] .stamp-item {
-      border-left: 4px solid var(--color-brand);
-      border-radius: 0 var(--radius-card) var(--radius-card) 0;
+    [data-kit="retro-travel"] .nav-svg { display: none; }
+    [data-kit="retro-travel"] .nav-btn { flex-direction: column; gap: 1px; color: #9A8C76; }
+    [data-kit="retro-travel"] .nav-btn span {
+      font-family: 'Shippori Mincho', 'Noto Serif JP', serif;
+      font-size: 14px; font-weight: 400; letter-spacing: 0.15em; line-height: 1;
     }
-    [data-kit="retro-travel"] .stamp-item:has(.stamp-dot.visited) {
-      border-left-color: var(--color-done);
+    [data-kit="retro-travel"] .nav-btn.active { color: #181410; }
+    [data-kit="retro-travel"] .nav-btn.active span { font-weight: 600; }
+    [data-kit="retro-travel"] .nav-btn.active::before {
+      top: 0; width: 20px; height: 2px; background: #A23A2B; border-radius: 0;
+    }
+    [data-kit="retro-travel"] #nav-map::after    { content: 'MAP'; }
+    [data-kit="retro-travel"] #nav-list::after   { content: 'INDEX'; }
+    [data-kit="retro-travel"] #nav-backup::after { content: 'DATA'; }
+    [data-kit="retro-travel"] .nav-btn::after {
+      font-family: 'Noto Sans JP', sans-serif;
+      font-size: 8px; letter-spacing: 0.28em; color: #9A8C76; line-height: 1;
+    }
+    [data-kit="retro-travel"] .nav-btn.active::after { color: #181410; }
+
+    /* ポップアップ: 短冊スタイル・上下墨ライン */
+    [data-kit="retro-travel"] #popup {
+      background: #F2EBD8;
+      border: none;
+      border-top: 1px solid #181410;
+      border-bottom: 1px solid #181410;
+      border-radius: 0;
+      box-shadow: none;
+    }
+    [data-kit="retro-travel"] #popup-number {
+      display: inline;
+      font-family: 'Shippori Mincho', 'Noto Serif JP', serif;
+      font-size: 10px; font-weight: 400; color: #A23A2B;
+      letter-spacing: 0.18em; margin-right: 8px;
+    }
+    [data-kit="retro-travel"] #popup-onsenti {
+      font-family: 'Noto Sans JP', sans-serif;
+      font-size: 9px; letter-spacing: 0.12em;
+    }
+    [data-kit="retro-travel"] #popup-badge { border-radius: 3px; }
+    [data-kit="retro-travel"] #popup-shisetsu {
+      font-family: 'Shippori Mincho', 'Noto Serif JP', serif;
+      font-size: 15px; font-weight: 600; letter-spacing: 0.03em; color: #181410;
+    }
+    [data-kit="retro-travel"] #popup-address {
+      font-family: 'Noto Sans JP', sans-serif;
+      font-size: 10px; color: #7A6B5A; letter-spacing: 0.06em;
+    }
+    [data-kit="retro-travel"] #popup-close { color: #9A8C76; }
+    [data-kit="retro-travel"] #btn-detail {
+      background: rgba(24,20,16,0.06); color: #181410; border-radius: 3px;
+    }
+    [data-kit="retro-travel"] #btn-route {
+      border-radius: 3px; background: #181410; color: #F2EBD8;
+    }
+    [data-kit="retro-travel"] #btn-visited { border-radius: 3px; }
+
+    /* 一覧パネル: 第/047/番 縦組み・済サークル */
+    [data-kit="retro-travel"] #panel {
+      background: #F2EBD8; top: 76px;
+      flex-direction: column; overflow: hidden;
+    }
+    /* パネルタイトルは非表示（フィルタータブが役割を担う） */
+    [data-kit="retro-travel"] #panel-header { display: none; }
+    /* フィルタータブ: チケットスタブ形式 */
+    [data-kit="retro-travel"] #panel-filter {
+      display: grid; grid-template-columns: 1fr 1fr 1fr;
+      gap: 8px; padding: 12px 14px 10px;
+      border-bottom: none; flex-shrink: 0;
     }
     [data-kit="retro-travel"] .filter-btn {
-      border-radius: 0;
-      border-width: 1.5px;
-      font-weight: 700;
+      padding: 6px 8px 7px; text-align: left;
+      background: #F2EBD8; color: #181410;
+      border: 1.5px solid #181410; border-radius: 0;
+      box-shadow: none; opacity: 1; min-width: 0;
+      font-family: inherit;
     }
     [data-kit="retro-travel"] .filter-btn.active {
-      outline: 1px solid var(--color-brand);
-      outline-offset: 1px;
+      background: #181410; color: #F2EBD8;
+      box-shadow: 2px 2px 0 0 #A23A2B;
+      border-color: #181410;
+    }
+    /* チケットタブ内部パーツ */
+    .rt-filter-row { display: none; }
+    .rt-filter-jp  { display: none; }
+    .rt-filter-n   { display: none; }
+    .rt-filter-en  { display: none; }
+    [data-kit="retro-travel"] .rt-filter-row {
+      display: flex; justify-content: space-between; align-items: baseline;
+    }
+    [data-kit="retro-travel"] .rt-filter-jp {
+      display: block;
+      font-family: 'Shippori Mincho', 'Noto Serif JP', serif;
+      font-size: 12px; font-weight: 700; letter-spacing: 0.02em;
+    }
+    [data-kit="retro-travel"] .rt-filter-n {
+      display: block;
+      font-family: 'Barlow Condensed', 'Noto Sans JP', sans-serif;
+      font-size: 13px; font-weight: 700; font-variant-numeric: tabular-nums;
+    }
+    [data-kit="retro-travel"] .rt-filter-en {
+      display: block;
+      font-family: 'Barlow Condensed', 'Noto Sans JP', sans-serif;
+      font-size: 7px; letter-spacing: 0.3em; opacity: 0.75; margin-top: 2px;
+    }
+    /* 元帳ヘッダーストリップ */
+    #rt-ledger-header { display: none; }
+    [data-kit="retro-travel"] #rt-ledger-header {
+      display: flex; justify-content: space-between; align-items: center;
+      background: #181410; color: #F2EBD8;
+      padding: 5px 22px;
+      font-family: 'Barlow Condensed', 'Noto Sans JP', sans-serif;
+      font-size: 8px; letter-spacing: 0.3em;
+      flex-shrink: 0;
+    }
+    [data-kit="retro-travel"] #panel-list {
+      flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch;
+      padding: 0 0 calc(60px + env(safe-area-inset-bottom)) 0;
+    }
+    [data-kit="retro-travel"] .stamp-item {
+      display: grid; grid-template-columns: 48px 1fr 34px;
+      gap: 14px; padding: 10px 22px 11px;
+      border-bottom: 1px dotted rgba(24,20,16,0.45);
+      background: transparent; box-shadow: none;
+      border-radius: 0; margin: 0; align-items: stretch;
+    }
+    /* 交互背景はJS側(localIdx % 2)で管理（フィルター後も正確に交互になる） */
+    [data-kit="retro-travel"] .stamp-dot { display: none; }
+    /* 第/047/番 縦組み + 右縦罫線 */
+    .rt-num { display: none; }
+    [data-kit="retro-travel"] .rt-num {
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      font-family: 'Shippori Mincho', 'Noto Serif JP', serif; color: #181410;
+      border-right: 1px dotted rgba(24,20,16,0.45);
+      padding-right: 6px;
+    }
+    .rt-num-label {
+      font-size: 7px; color: #9A8C76; letter-spacing: 0.18em; line-height: 1;
+    }
+    .rt-num-digit {
+      font-size: 18px; line-height: 1.1; font-weight: 800;
+      font-variant-numeric: tabular-nums;
+    }
+    [data-kit="retro-travel"] .stamp-info {
+      padding-left: 12px; display: flex; flex-direction: column; justify-content: center;
+      min-width: 0;
+    }
+    [data-kit="retro-travel"] .stamp-name {
+      font-family: 'Shippori Mincho', 'Noto Serif JP', serif;
+      font-size: 15px; font-weight: 800; color: #181410; letter-spacing: 0.02em;
+    }
+    [data-kit="retro-travel"] .stamp-sub {
+      font-family: 'Noto Sans JP', sans-serif;
+      font-size: 10px; color: #7A6B5A; letter-spacing: 0.04em; margin-top: 4px;
+    }
+    /* 検印セル: 済＝角印ハンコ / 未＝斜線枠 */
+    .rt-stamp { display: none; }
+    [data-kit="retro-travel"] .rt-stamp {
+      display: flex; align-items: center; justify-content: center; align-self: center;
+      width: 30px; height: 30px;
+      border: 1px dashed rgba(24,20,16,0.4);
+      background: repeating-linear-gradient(45deg, transparent 0 3px, rgba(24,20,16,0.04) 3px 4px);
+      font-family: 'Shippori Mincho', 'Noto Serif JP', serif;
+      font-size: 13px; font-weight: 500; color: transparent;
+      flex-shrink: 0;
+    }
+    [data-kit="retro-travel"] .rt-stamp.rt-visited {
+      background: #A23A2B;
+      border: 2px solid #A23A2B;
+      box-shadow: inset 0 0 0 1px #F2EBD8, inset 0 0 0 2px #A23A2B;
+      color: #F2EBD8;
+      transform: rotate(-4deg);
+    }
+
+    /* バックアップパネル */
+    [data-kit="retro-travel"] #backup-panel {
+      top: 76px; background: #F2EBD8;
     }
     [data-kit="retro-travel"] .backup-section {
-      border-left: 4px solid var(--color-brand);
-      border-radius: 0 var(--radius-card) var(--radius-card) 0;
+      background: transparent; box-shadow: none; border-radius: 0;
+      border: none; border-bottom: 1px solid rgba(24,20,16,0.08);
+    }
+    [data-kit="retro-travel"] .backup-section-title {
+      font-family: 'Shippori Mincho', 'Noto Serif JP', serif;
+      font-size: 14px; font-weight: 600; letter-spacing: 0.1em;
+    }
+    [data-kit="retro-travel"] .backup-btn { border-radius: 3px; }
+    [data-kit="retro-travel"] .backup-btn.primary { border-radius: 3px; }
+    [data-kit="retro-travel"] .btn-destructive { border-radius: 3px; }
+
+    /* トースト */
+    [data-kit="retro-travel"] #toast {
+      top: 196px; /* header(76) + progress-card(~110) + gap */
+      border-radius: 3px;
+    }
+
+    /* swiss-minimal stamp-dot: non-grid kitは表示しない（sw-indicatorで代替） */
+
+    /* expedition: スタンプドットは下部のルールで定義 */
+
+    /* ---- POP PILGRIMAGE: スタンプドット → リングステッカー ---- */
+    [data-kit="pop-pilgrimage"] .stamp-dot {
+      outline: 2.5px solid currentColor;
+      outline-offset: 2px;
+    }
+    [data-kit="pop-pilgrimage"] .stamp-dot.visited {
+      background: var(--color-done-bg);
+      color: var(--color-done);
+      outline-color: var(--color-done);
+    }
+    [data-kit="pop-pilgrimage"] .stamp-dot.unvisited {
+      background: var(--color-brand-bg);
+      color: var(--color-brand);
+      outline-color: var(--color-brand);
     }
 
     /* ---- EXPEDITION: 測量感・コンデンスドタイポ・ターゲット ---- */
+
+    /* 地図をフルスクリーンに */
+    [data-kit="expedition"] #map {
+      top: 0;
+      bottom: 0;
+    }
+
+    /* ヘッダー：浮遊ピル */
     [data-kit="expedition"] #header {
-      box-shadow: none;
-      border-bottom: 2px solid var(--color-brand);
-      letter-spacing: 0.15em;
+      top: 12px;
+      left: 16px; right: 16px;
+      height: 56px;
+      border-radius: 14px;
+      background: rgba(237,234,224,0.86);
+      backdrop-filter: blur(20px) saturate(1.05);
+      -webkit-backdrop-filter: blur(20px) saturate(1.05);
+      box-shadow: 0 2px 12px rgba(26,38,32,0.12);
+      border-bottom: none;
+      justify-content: space-between;
+      padding: 0 16px;
     }
     [data-kit="expedition"] #header-title {
-      text-transform: uppercase;
-      letter-spacing: 0.2em;
-      font-size: 17px;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 2px;
     }
-    [data-kit="expedition"] #panel-title,
-    [data-kit="expedition"] .backup-section-title {
-      text-transform: uppercase;
-      letter-spacing: 0.15em;
-      font-size: 12px;
+    [data-kit="expedition"] #header-icon { display: none; }
+    [data-kit="expedition"] #header-name {
+      font-family: 'Noto Sans JP', sans-serif;
+      font-size: 11px;
+      font-weight: 500;
+      color: #1A2620;
+      letter-spacing: 0.12em;
+      white-space: nowrap;
     }
-    [data-kit="expedition"] .stamp-item {
-      border-top: 2px solid var(--border-card);
-      border-left: none;
-      border-right: none;
+    /* 進捗バーセクションは地図ビューでは非表示（カウントはヘッダーに統合） */
+    [data-kit="expedition"] #progress-section {
+      display: none;
+    }
+    [data-kit="expedition"] #header-title::before {
+      content: 'KYUSHU · 88';
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 9px;
+      font-weight: 600;
+      color: #3A4E3F;
+      letter-spacing: 0.28em;
+      white-space: nowrap;
+    }
+    /* 右側の訪問数 */
+    #header-stat { display: none; }
+    [data-kit="expedition"] #header-stat {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      gap: 8px;
+    }
+    [data-kit="expedition"] #header-ring { flex-shrink: 0; }
+    [data-kit="expedition"] #header-stat-text {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 1px;
+    }
+    [data-kit="expedition"] #header-stat-label {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 8px;
+      font-weight: 600;
+      color: #3A4E3F;
+      letter-spacing: 0.24em;
+    }
+    [data-kit="expedition"] #header-stat-count {
+      display: flex;
+      align-items: baseline;
+      gap: 1px;
+    }
+    [data-kit="expedition"] #header-visited-count {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 18px;
+      font-weight: 500;
+      color: #1A2620;
+      letter-spacing: -0.02em;
+      font-variant-numeric: tabular-nums;
+    }
+    [data-kit="expedition"] #header-total-count {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 10px;
+      color: #3A4E3F;
+    }
+
+    /* 進捗バー：すりガラス浮遊・ボーダーなし */
+    [data-kit="expedition"] #progress-section {
+      background: rgba(242,240,234,0.90);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
       border-bottom: none;
-      border-radius: 0;
-      background: transparent;
-      box-shadow: none;
-      margin: 0 12px;
-    }
-    [data-kit="expedition"] #panel-list {
-      border-bottom: 1px solid var(--border-card);
     }
     [data-kit="expedition"] #progress-bar-bg {
       height: 10px;
@@ -737,6 +1661,171 @@
       border-radius: 0;
       background: var(--color-brand);
     }
+
+    /* ボトムナビ：浮遊ピル */
+    [data-kit="expedition"] #bottom-nav {
+      bottom: calc(14px + env(safe-area-inset-bottom));
+      left: 16px; right: 16px;
+      height: 56px;
+      padding-bottom: 0;
+      border-radius: 14px;
+      background: rgba(237,234,224,0.92);
+      backdrop-filter: blur(20px) saturate(1.05);
+      -webkit-backdrop-filter: blur(20px) saturate(1.05);
+      border-top: none;
+      border: 1px solid rgba(26,38,32,0.08);
+      box-shadow: 0 2px 16px rgba(26,38,32,0.12);
+    }
+    /* SVGアイコン非表示、テキスト2段 */
+    [data-kit="expedition"] .nav-svg { display: none; }
+    [data-kit="expedition"] .nav-btn {
+      flex-direction: column;
+      gap: 1px;
+      color: #3A4E3F;
+      font-size: 11px;
+    }
+    [data-kit="expedition"] .nav-btn span {
+      font-family: 'Noto Sans JP', sans-serif;
+      font-size: 11px;
+      font-weight: 400;
+      letter-spacing: 0.14em;
+      line-height: 1;
+    }
+    [data-kit="expedition"] .nav-btn.active span {
+      font-weight: 600;
+      color: #C4622D;
+    }
+    /* 英語ラベル */
+    [data-kit="expedition"] #nav-map::after    { content: 'MAP';  }
+    [data-kit="expedition"] #nav-list::after   { content: 'LOG';  }
+    [data-kit="expedition"] #nav-backup::after { content: 'DATA'; }
+    [data-kit="expedition"] .nav-btn::after {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 8px;
+      font-weight: 600;
+      letter-spacing: 0.24em;
+      color: #3A4E3F;
+      opacity: 0.7;
+    }
+    [data-kit="expedition"] .nav-btn.active::after { color: #C4622D; opacity: 1; }
+    /* アクティブ線：ピル上部内側 */
+    [data-kit="expedition"] .nav-btn.active::before {
+      top: 8px;
+      width: 18px; height: 1.5px;
+      border-radius: 0;
+    }
+    /* FABをナビピルの上に・小型化 */
+    [data-kit="expedition"] #fab-wrap {
+      bottom: calc(82px + env(safe-area-inset-bottom));
+      gap: 8px;
+    }
+    [data-kit="expedition"] #btn-locate {
+      width: 44px; height: 44px;
+      background: rgba(237,234,224,0.92);
+      backdrop-filter: blur(14px) saturate(1.05);
+      -webkit-backdrop-filter: blur(14px) saturate(1.05);
+      border: 1px solid rgba(26,38,32,0.10);
+      box-shadow: 0 2px 8px rgba(26,38,32,0.14);
+    }
+    [data-kit="expedition"] #btn-locate svg {
+      width: 16px; height: 16px;
+      stroke: #1A2620;
+      stroke-width: 1.5;
+    }
+    [data-kit="expedition"] #btn-near {
+      width: 44px; height: 44px;
+      background: #C4622D;
+      box-shadow: 0 2px 10px rgba(196,98,45,0.3);
+      font-size: 8px;
+      font-family: 'Noto Sans JP', sans-serif;
+      letter-spacing: 0.04em;
+      line-height: 1.5;
+    }
+    /* ポップアップ：底面固定・ダークガラス・左ボーダー */
+    [data-kit="expedition"] #popup {
+      bottom: calc(84px + env(safe-area-inset-bottom));
+      background: rgba(26,38,32,0.92);
+      backdrop-filter: blur(20px) saturate(1.1);
+      -webkit-backdrop-filter: blur(20px) saturate(1.1);
+      border: none;
+      border-left: 3px solid #C4622D;
+      border-radius: 10px;
+      box-shadow: 0 4px 24px rgba(26,38,32,0.35);
+    }
+    #popup-number { display: none; }
+    [data-kit="expedition"] #popup-number {
+      display: inline;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 9px;
+      font-weight: 600;
+      color: rgba(237,234,224,0.45);
+      letter-spacing: 0.28em;
+      margin-right: 8px;
+    }
+    [data-kit="expedition"] #popup-onsenti {
+      color: rgba(237,234,224,0.5);
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 9px;
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+    }
+    [data-kit="expedition"] #popup-badge {
+      background: rgba(196,98,45,0.25);
+      color: #C4622D;
+    }
+    [data-kit="expedition"] #popup-close { color: rgba(237,234,224,0.4); }
+    [data-kit="expedition"] #popup-shisetsu {
+      color: #EDEAE0;
+      font-family: 'Noto Sans JP', sans-serif;
+    }
+    [data-kit="expedition"] #popup-address {
+      color: rgba(237,234,224,0.5);
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 10px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+    }
+    [data-kit="expedition"] #btn-detail {
+      background: rgba(237,234,224,0.1);
+      color: #EDEAE0;
+      border-radius: 4px;
+    }
+    [data-kit="expedition"] #btn-route {
+      background: rgba(58,78,63,0.7);
+      color: #EDEAE0;
+      border-radius: 4px;
+    }
+    [data-kit="expedition"] #btn-visited {
+      border-radius: 4px;
+    }
+
+    /* 一覧パネル：進捗バーと同じ背景で連続感 */
+    [data-kit="expedition"] #panel {
+      background: #F2F0EA;
+    }
+
+    [data-kit="expedition"] #panel-title,
+    [data-kit="expedition"] .backup-section-title {
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      font-size: 12px;
+    }
+
+    /* スタンプ仕切り：細い点線 */
+    [data-kit="expedition"] .stamp-item {
+      border-top: 1px dashed rgba(160,175,155,0.55);
+      border-left: none;
+      border-right: none;
+      border-bottom: none;
+      border-radius: 0;
+      background: transparent;
+      box-shadow: none;
+      margin: 0 12px;
+    }
+    [data-kit="expedition"] #panel-list {
+      border-bottom: 1px dashed rgba(160,175,155,0.55);
+    }
+
     [data-kit="expedition"] .filter-btn {
       border-radius: 3px;
       border-width: 1.5px;
@@ -745,6 +1834,248 @@
       text-transform: uppercase;
       font-weight: 700;
     }
+
+    /* ズームコントロール非表示 */
+    [data-kit="expedition"] .leaflet-control-zoom { display: none; }
+
+    /* 地図タイルのトーン（アース・オリーブ調） */
+    [data-kit="expedition"] .leaflet-tile-pane {
+      filter: saturate(0.3) sepia(0.2) brightness(0.88);
+    }
+
+    /* 記録：上書き復元ボタン角丸 */
+    [data-kit="expedition"] .btn-destructive { border-radius: 3px; }
+
+    /* ===== DATAタブ（expedition） ===== */
+    [data-kit="expedition"] #backup-panel {
+      background: #EDEAE0;
+      top: 72px;
+      padding: 0;
+      padding-bottom: calc(84px + env(safe-area-inset-bottom));
+    }
+    [data-kit="expedition"] #backup-panel::before {
+      content: 'DATA · RECORDS';
+      display: block;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 9px; font-weight: 600;
+      color: #3A4E3F; letter-spacing: 0.28em;
+      padding: 16px 22px 0;
+    }
+    [data-kit="expedition"] .backup-section {
+      background: transparent;
+      box-shadow: none;
+      border-radius: 0;
+      border: none;
+      border-top: 1px solid rgba(26,38,32,0.1);
+      padding: 16px 22px;
+      margin: 0;
+    }
+    [data-kit="expedition"] .backup-section-title {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 11px; font-weight: 600;
+      color: #3A4E3F; letter-spacing: 0.22em;
+      text-transform: uppercase;
+    }
+    [data-kit="expedition"] .backup-section-title svg { color: #3A4E3F; }
+    [data-kit="expedition"] .backup-section-sub {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 10px; font-weight: 600;
+      color: #3A4E3F; letter-spacing: 0.18em;
+      text-transform: uppercase;
+    }
+    [data-kit="expedition"] .backup-section-desc {
+      font-family: 'Noto Sans JP', sans-serif;
+      font-size: 11px; color: rgba(26,38,32,0.55);
+    }
+    [data-kit="expedition"] .code-box {
+      background: rgba(26,38,32,0.06);
+      border: 1px solid rgba(26,38,32,0.12);
+      border-radius: 6px;
+      color: #1A2620;
+      font-size: 11px;
+    }
+    [data-kit="expedition"] .code-input {
+      background: rgba(26,38,32,0.05);
+      border: 1px solid rgba(26,38,32,0.15);
+      border-radius: 6px;
+      color: #1A2620;
+    }
+    [data-kit="expedition"] .code-input::placeholder { color: rgba(26,38,32,0.35); }
+    [data-kit="expedition"] .backup-btn {
+      background: rgba(26,38,32,0.08);
+      border: 1px solid rgba(26,38,32,0.15);
+      border-radius: 6px;
+      color: #1A2620;
+      font-family: 'Noto Sans JP', sans-serif;
+      font-size: 13px;
+    }
+    [data-kit="expedition"] .backup-btn.primary {
+      background: #C4622D;
+      border-color: #C4622D;
+      color: #EDEAE0;
+    }
+    [data-kit="expedition"] .backup-btn.primary:active { background: #A04A1E; }
+    [data-kit="expedition"] .backup-divider {
+      border-color: rgba(26,38,32,0.12);
+    }
+    [data-kit="expedition"] .destructive-note {
+      color: rgba(26,38,32,0.45);
+    }
+    [data-kit="expedition"] .privacy-note {
+      color: rgba(26,38,32,0.4);
+      font-family: 'Noto Sans JP', sans-serif;
+      font-size: 10px;
+      padding: 16px 22px;
+    }
+
+    /* トーストをヘッダーピル直下に */
+    [data-kit="expedition"] #toast {
+      top: 80px;
+      background: rgba(26,38,32,0.88);
+      color: #EDEAE0;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-radius: 20px;
+      font-family: 'Noto Sans JP', sans-serif;
+      font-size: 12px;
+      letter-spacing: 0.05em;
+    }
+
+    /* ポップアップ「踏破する」ボタンフォント */
+    [data-kit="expedition"] #btn-visited {
+      font-family: 'Noto Sans JP', sans-serif;
+      font-weight: 500;
+      font-size: 14px;
+      letter-spacing: 0.08em;
+      border-radius: 6px;
+    }
+
+    /* ===== 一覧パネル（expedition） ===== */
+    [data-kit="expedition"] #panel {
+      background: #EDEAE0;
+      top: 72px;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    [data-kit="expedition"] #panel-header {
+      background: #EDEAE0;
+      border-bottom: none;
+      flex-direction: column;
+      align-items: flex-start;
+      flex-shrink: 0;
+      height: auto;
+      padding: 14px 22px 0;
+      gap: 2px;
+    }
+    [data-kit="expedition"] #panel-title {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 9px; font-weight: 600;
+      color: #3A4E3F; letter-spacing: 0.28em;
+      text-transform: uppercase;
+    }
+    [data-kit="expedition"] #panel-count {
+      width: 100%;
+      font-size: inherit; font-weight: inherit; color: inherit;
+    }
+    /* ヒーロー数字 */
+    [data-kit="expedition"] .exp-hero-row {
+      display: flex; align-items: baseline; gap: 8px; margin-top: 6px;
+    }
+    [data-kit="expedition"] .exp-hero-num {
+      font-family: 'Inter', 'Noto Sans JP', sans-serif;
+      font-size: 52px; font-weight: 500;
+      color: #1A2620; letter-spacing: -0.04em;
+      font-variant-numeric: tabular-nums; line-height: 0.85;
+    }
+    [data-kit="expedition"] .exp-hero-right { display: flex; flex-direction: column; gap: 2px; }
+    [data-kit="expedition"] .exp-hero-of {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 10px; color: #3A4E3F; letter-spacing: 0.22em;
+    }
+    [data-kit="expedition"] .exp-hero-pct {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 13px; font-weight: 600; color: #C4622D; letter-spacing: 0.06em;
+    }
+    [data-kit="expedition"] .exp-prog-bar {
+      margin-top: 14px; height: 2px;
+      background: rgba(26,38,32,0.1); position: relative;
+    }
+    [data-kit="expedition"] .exp-prog-fill {
+      position: absolute; left: 0; top: 0; height: 100%; background: #C4622D;
+    }
+    /* フィルター */
+    [data-kit="expedition"] #panel-filter {
+      background: transparent;
+      padding: 14px 22px 10px;
+      gap: 20px;
+      border-bottom: none;
+      flex-shrink: 0;
+    }
+    [data-kit="expedition"] .filter-btn {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 9px; font-weight: 600; letter-spacing: 0.22em;
+      background: none; border: none; border-radius: 0;
+      color: #3A4E3F; opacity: 0.4;
+      padding: 0; min-width: 0;
+    }
+    [data-kit="expedition"] .filter-btn.active {
+      color: #C4622D; opacity: 1;
+      background: none; border: none;
+    }
+    [data-kit="expedition"] .filter-btn.active::after { display: none; }
+    /* リストアイテム */
+    [data-kit="expedition"] #panel-list {
+      background: #EDEAE0;
+      padding-top: 0;
+      padding-bottom: calc(84px + env(safe-area-inset-bottom));
+      flex: 1;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+    [data-kit="expedition"] .stamp-item {
+      background: transparent;
+      box-shadow: none;
+      border-radius: 0;
+      border-bottom: 1px solid rgba(26,38,32,0.08);
+      padding: 12px 22px;
+      display: grid;
+      grid-template-columns: 44px 1fr 12px;
+      gap: 12px;
+      align-items: center;
+    }
+    .stamp-num { display: none; }
+    [data-kit="expedition"] .stamp-num {
+      display: block;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 17px; font-weight: 500;
+      color: #1A2620; letter-spacing: -0.02em;
+      font-variant-numeric: tabular-nums;
+    }
+    [data-kit="expedition"] .stamp-dot {
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      font-size: 0; flex-shrink: 0;
+    }
+    [data-kit="expedition"] .stamp-dot.visited {
+      width: 12px; height: 12px;
+      background: #3A4E3F; color: transparent;
+      border: none;
+    }
+    [data-kit="expedition"] .stamp-dot.unvisited {
+      background: transparent;
+      border: 1.5px solid #C4622D; color: transparent;
+    }
+    [data-kit="expedition"] .stamp-name {
+      font-family: 'Noto Sans JP', sans-serif;
+      font-size: 14px; font-weight: 500; color: #1A2620;
+    }
+    [data-kit="expedition"] .stamp-sub {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 9px; color: #3A4E3F;
+      letter-spacing: 0.18em; text-transform: uppercase;
+      margin-top: 2px;
+    }
+
     [data-kit="expedition"] .backup-section {
       border-radius: 0;
       border-top: 2px solid var(--color-brand);
@@ -755,54 +2086,389 @@
       background: transparent;
     }
 
-    /* ---- POP PILGRIMAGE: グラデ・デカいバー・押すとぷよぷよ ---- */
+    /* =====================================================================
+       POP PILGRIMAGE — タイポ主役・プレミアムポップ
+       ink #0F0A1F / cream #FFF7EE / punch #FF4D6D / acid #D9F25C / grape #6E3AED
+       ===================================================================== */
+
+    /* ヘッダー: クリームベース・ONSEN.88タイポ */
     [data-kit="pop-pilgrimage"] #header {
-      background: linear-gradient(135deg, #5B21B6 0%, #9333EA 50%, #EC4899 100%);
-      box-shadow: 0 4px 20px rgba(147,51,234,0.4);
+      background: #FFF7EE;
+      box-shadow: none;
+      border-bottom: 1px solid rgba(15,10,31,0.07);
+      justify-content: space-between;
+      padding: 0 18px;
+    }
+    [data-kit="pop-pilgrimage"] #header-title {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0;
+    }
+    [data-kit="pop-pilgrimage"] #header-icon { display: none; }
+    [data-kit="pop-pilgrimage"] #header-name {
+      font-family: 'Bricolage Grotesque', 'Inter', system-ui, sans-serif;
+      font-size: 21px;
+      font-weight: 800;
+      color: #0F0A1F;
+      letter-spacing: -0.04em;
+      line-height: 1;
+    }
+    [data-kit="pop-pilgrimage"] #header-title::after {
+      content: '九州・八十八温泉';
+      font-family: 'Noto Sans JP', system-ui, sans-serif;
+      font-size: 9px;
+      font-weight: 400;
+      color: #7A6B8A;
+      letter-spacing: 0.2em;
+      margin-top: 2px;
+    }
+
+    /* 右側カウント */
+    [data-kit="pop-pilgrimage"] #header-stat {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    [data-kit="pop-pilgrimage"] #header-ring { display: none; }
+    [data-kit="pop-pilgrimage"] #header-stat-label { display: none; }
+    [data-kit="pop-pilgrimage"] #header-stat::before {
+      content: '';
+      display: inline-block;
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: #FF4D6D;
+      flex-shrink: 0;
+    }
+    [data-kit="pop-pilgrimage"] #header-stat-count {
+      display: flex;
+      align-items: baseline;
+    }
+    [data-kit="pop-pilgrimage"] #header-visited-count,
+    [data-kit="pop-pilgrimage"] #header-total-count {
+      font-family: 'Bricolage Grotesque', 'Inter', system-ui, sans-serif;
+      font-size: 13px;
+      font-weight: 800;
+      color: #0F0A1F;
+      letter-spacing: -0.01em;
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* 進捗セクション: 地図の上に浮遊するダークカード */
+    [data-kit="pop-pilgrimage"] #progress-section {
+      top: 72px;
+      left: 16px; right: 16px;
+      height: auto;
+      justify-content: flex-start;
+      border-radius: 14px;
+      background: #0F0A1F;
+      box-shadow: 0 4px 24px rgba(15,10,31,0.28);
+      border-bottom: none;
+      z-index: 999;
+      padding: 12px 16px 14px;
+      gap: 8px;
+    }
+    [data-kit="pop-pilgrimage"] #progress-section::before {
+      content: 'PROGRESS';
+      font-family: 'Bricolage Grotesque', 'Inter', system-ui, sans-serif;
+      font-size: 9px;
+      font-weight: 700;
+      color: #D9F25C;
+      letter-spacing: 0.24em;
+    }
+    [data-kit="pop-pilgrimage"] #progress-count {
+      font-family: 'Bricolage Grotesque', 'Inter', system-ui, sans-serif;
+      font-size: 44px;
+      font-weight: 800;
+      color: #FFF7EE;
+      line-height: 0.9;
+      letter-spacing: -0.05em;
+      font-variant-numeric: tabular-nums;
+    }
+    [data-kit="pop-pilgrimage"] #progress-unit { display: none; }
+    [data-kit="pop-pilgrimage"] #progress-text {
+      font-size: 11px;
+      color: rgba(255,247,238,0.5);
+      font-family: 'Bricolage Grotesque', 'Inter', system-ui, sans-serif;
     }
     [data-kit="pop-pilgrimage"] #progress-bar-bg {
-      height: 16px;
-      border-radius: 9px;
-      background: rgba(147,51,234,0.12);
+      height: 4px;
+      border-radius: 999px;
+      background: rgba(255,247,238,0.16);
     }
     [data-kit="pop-pilgrimage"] #progress-bar-fill {
-      border-radius: 8px;
-      background: linear-gradient(90deg, #7C3AED, #EC4899);
+      border-radius: 999px;
+      background: #D9F25C;
     }
-    [data-kit="pop-pilgrimage"] .stamp-item {
-      box-shadow: 0 4px 14px rgba(147,51,234,0.1);
-      border: 1.5px solid var(--border-card);
-      transition: transform 0.12s, box-shadow 0.12s;
+    [data-kit="pop-pilgrimage"] #progress-pct {
+      font-family: 'Bricolage Grotesque', 'Inter', system-ui, sans-serif;
+      font-size: 13px;
+      font-weight: 800;
+      color: #D9F25C;
     }
-    [data-kit="pop-pilgrimage"] .stamp-item:active {
-      transform: scale(0.97);
-      box-shadow: 0 2px 6px rgba(147,51,234,0.08);
+
+    /* 地図: ヘッダー直下から全画面（進捗カードが上にオーバーレイ） */
+    [data-kit="pop-pilgrimage"] #map {
+      top: 64px;
+    }
+
+    /* FAB: 浮遊ナビの上 */
+    [data-kit="pop-pilgrimage"] #fab-wrap {
+      bottom: calc(80px + env(safe-area-inset-bottom));
+      gap: 8px;
+    }
+    [data-kit="pop-pilgrimage"] #btn-locate {
+      width: 44px; height: 44px;
+      background: #FFF7EE;
+      border: 1.5px solid #0F0A1F;
+      box-shadow: none;
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
+    }
+    [data-kit="pop-pilgrimage"] #btn-locate svg {
+      width: 16px; height: 16px;
+      stroke: #0F0A1F;
+      stroke-width: 1.5;
+    }
+    [data-kit="pop-pilgrimage"] #btn-near {
+      width: 44px; height: 44px;
+      background: #FF4D6D;
+      color: #fff;
+      font-family: 'Bricolage Grotesque', 'Inter', system-ui, sans-serif;
+      font-size: 8px;
+      font-weight: 800;
+      letter-spacing: 0.1em;
+      line-height: 1.3;
+      box-shadow: 0 2px 10px rgba(255,77,109,0.35);
+    }
+
+    /* ボトムナビ: ダーク浮遊ピル */
+    [data-kit="pop-pilgrimage"] #bottom-nav {
+      bottom: calc(14px + env(safe-area-inset-bottom));
+      left: 16px; right: 16px;
+      height: 52px;
+      padding: 5px;
+      padding-bottom: 5px;
+      gap: 4px;
+      border-radius: 14px;
+      background: #0F0A1F;
+      border-top: none;
+      box-shadow: none;
+    }
+    [data-kit="pop-pilgrimage"] .nav-svg { display: none; }
+    [data-kit="pop-pilgrimage"] .nav-btn {
+      border-radius: 10px;
+      color: rgba(255,255,255,0.45);
+      flex-direction: row;
+      gap: 5px;
+      font-size: 11px;
+    }
+    [data-kit="pop-pilgrimage"] .nav-btn.active {
+      background: #D9F25C;
+      color: #0F0A1F;
+    }
+    [data-kit="pop-pilgrimage"] .nav-btn.active::before { display: none; }
+    [data-kit="pop-pilgrimage"] .nav-btn span {
+      font-family: 'Noto Sans JP', system-ui, sans-serif;
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.04em;
+      line-height: 1;
+    }
+    [data-kit="pop-pilgrimage"] .nav-btn.active span { font-weight: 700; }
+    [data-kit="pop-pilgrimage"] #nav-map::after    { content: 'MAP'; }
+    [data-kit="pop-pilgrimage"] #nav-list::after   { content: 'INDEX'; }
+    [data-kit="pop-pilgrimage"] #nav-backup::after { content: 'DATA'; }
+    [data-kit="pop-pilgrimage"] .nav-btn::after {
+      font-family: 'Bricolage Grotesque', 'Inter', system-ui, sans-serif;
+      font-size: 8px;
+      font-weight: 800;
+      letter-spacing: 0.2em;
+    }
+
+    /* ポップアップ: クリームベース・インクボーダー */
+    [data-kit="pop-pilgrimage"] #popup {
+      bottom: calc(84px + env(safe-area-inset-bottom));
+      background: #FFF7EE;
+      border: 1.5px solid #0F0A1F;
+      border-radius: 10px;
+      box-shadow: 0 4px 24px rgba(15,10,31,0.15);
+    }
+    [data-kit="pop-pilgrimage"] #popup-number {
+      display: inline-block;
+      background: #D9F25C;
+      color: #0F0A1F;
+      font-family: 'Bricolage Grotesque', 'Inter', system-ui, sans-serif;
+      font-size: 8px;
+      font-weight: 800;
+      letter-spacing: 0.15em;
+      padding: 2px 7px;
+      border-radius: 999px;
+      margin-right: 6px;
+      vertical-align: middle;
+    }
+    [data-kit="pop-pilgrimage"] #popup-onsenti {
+      font-family: 'Inter', system-ui, sans-serif;
+      font-size: 10px;
+      letter-spacing: 0.04em;
+    }
+    [data-kit="pop-pilgrimage"] #popup-shisetsu {
+      font-family: 'Noto Sans JP', system-ui, sans-serif;
+      font-size: 15px;
+      font-weight: 700;
+      color: #0F0A1F;
+    }
+    [data-kit="pop-pilgrimage"] #popup-address {
+      color: #7A6B8A;
+      font-size: 11px;
+    }
+    [data-kit="pop-pilgrimage"] #popup-close { color: #A09AB0; }
+    [data-kit="pop-pilgrimage"] #btn-detail {
+      background: rgba(15,10,31,0.06);
+      color: #0F0A1F;
+      border-radius: 10px;
+    }
+
+    /* スタンプ一覧パネル */
+    [data-kit="pop-pilgrimage"] #panel {
+      background: #FFF7EE;
+      background-image: none;
+      top: 64px;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    [data-kit="pop-pilgrimage"] #panel-header { display: none; }
+    [data-kit="pop-pilgrimage"] #panel-filter {
+      padding: 14px 16px 10px;
+      gap: 8px;
+      flex-shrink: 0;
+      border-bottom: none;
+    }
+    [data-kit="pop-pilgrimage"] .filter-btn {
+      flex: 1;
+      padding: 10px 8px;
+      border-radius: 12px;
+      border: 1.5px solid #0F0A1F;
+      background: transparent;
+      color: #0F0A1F;
+      font-family: 'Bricolage Grotesque', 'Inter', system-ui, sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-align: center;
     }
     [data-kit="pop-pilgrimage"] .filter-btn.active {
-      background: linear-gradient(135deg, #7C3AED, #EC4899);
-      border-color: transparent;
+      background: #0F0A1F;
+      border-color: #0F0A1F;
+      color: #FFF7EE;
     }
-    [data-kit="pop-pilgrimage"] #panel {
-      background-image: radial-gradient(circle, rgba(147,51,234,0.06) 1px, transparent 1px);
-      background-size: 20px 20px;
+    [data-kit="pop-pilgrimage"] #panel-list {
+      flex: 1;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      padding-bottom: calc(80px + env(safe-area-inset-bottom));
     }
+
+    /* 一覧アイテム: グリッド・タイポ主役 */
+    [data-kit="pop-pilgrimage"] .stamp-item {
+      display: grid;
+      grid-template-columns: 56px 1fr auto;
+      gap: 14px;
+      align-items: center;
+      padding: 13px 18px;
+      border-bottom: 1px solid rgba(15,10,31,0.07);
+      background: transparent;
+      box-shadow: none;
+      border-radius: 0;
+      margin: 0;
+      transition: background 0.1s;
+    }
+    [data-kit="pop-pilgrimage"] .stamp-item:active {
+      background: rgba(15,10,31,0.03);
+      transform: none;
+    }
+    [data-kit="pop-pilgrimage"] .stamp-dot { display: none; }
+    [data-kit="pop-pilgrimage"] .stamp-num {
+      display: block;
+      font-family: 'Bricolage Grotesque', 'Inter', system-ui, sans-serif;
+      font-size: 26px;
+      font-weight: 800;
+      color: #0F0A1F;
+      letter-spacing: -0.04em;
+      font-variant-numeric: tabular-nums;
+      line-height: 1;
+    }
+    [data-kit="pop-pilgrimage"] .pop-visited-item .stamp-num {
+      color: #C9C3D6;
+    }
+    [data-kit="pop-pilgrimage"] .stamp-name {
+      font-family: 'Noto Sans JP', system-ui, sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      color: #0F0A1F;
+    }
+    [data-kit="pop-pilgrimage"] .stamp-sub {
+      font-family: 'Inter', system-ui, sans-serif;
+      font-size: 10px;
+      color: #7A6B8A;
+      letter-spacing: 0.05em;
+      margin-top: 3px;
+    }
+
+    /* DONE ピル・未訪問ドット */
+    .pop-done-pill  { display: none; }
+    .pop-unvisited-dot { display: none; }
+    [data-kit="pop-pilgrimage"] .pop-done-pill {
+      display: inline-block;
+      font-family: 'Bricolage Grotesque', 'Inter', system-ui, sans-serif;
+      font-size: 8px;
+      font-weight: 800;
+      letter-spacing: 0.2em;
+      color: #0F0A1F;
+      background: #D9F25C;
+      padding: 4px 8px;
+      border-radius: 999px;
+      white-space: nowrap;
+    }
+    [data-kit="pop-pilgrimage"] .pop-unvisited-dot {
+      display: block;
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: #FF4D6D;
+      flex-shrink: 0;
+    }
+
+    /* データタブ（ヘッダーなし・全画面） */
     [data-kit="pop-pilgrimage"] #backup-panel {
-      background-image: radial-gradient(circle, rgba(147,51,234,0.06) 1px, transparent 1px);
-      background-size: 20px 20px;
+      background: #FFF7EE;
+      background-image: none;
+      top: 0;
+      padding-top: calc(env(safe-area-inset-top, 0px) + 20px);
     }
     [data-kit="pop-pilgrimage"] .backup-section {
-      box-shadow: 0 4px 16px rgba(147,51,234,0.1);
-      border: 1.5px solid var(--border-card);
+      box-shadow: none;
+      border: 1.5px solid rgba(15,10,31,0.08);
+      border-radius: 16px;
     }
-    [data-kit="pop-pilgrimage"] #popup {
-      box-shadow: 0 8px 40px rgba(147,51,234,0.25);
+    [data-kit="pop-pilgrimage"] .backup-section-title {
+      font-family: 'Noto Sans JP', system-ui, sans-serif;
     }
-    [data-kit="pop-pilgrimage"] .nav-btn.active::before {
-      background: linear-gradient(90deg, #7C3AED, #EC4899);
-      width: 40px;
-      height: 3px;
-      border-radius: 2px;
+    [data-kit="pop-pilgrimage"] .code-box {
+      background: rgba(15,10,31,0.04);
+      border-color: rgba(15,10,31,0.10);
+      border-radius: 10px;
     }
+    [data-kit="pop-pilgrimage"] .code-input { border-radius: 10px; }
+    [data-kit="pop-pilgrimage"] .backup-btn {
+      border-radius: 10px;
+      font-family: 'Noto Sans JP', system-ui, sans-serif;
+    }
+    [data-kit="pop-pilgrimage"] .backup-btn.primary {
+      background: #6E3AED;
+      border-color: #6E3AED;
+    }
+
+    /* トースト: プログレスカード直下（地図タブ: 72px + ~118px height） */
+    [data-kit="pop-pilgrimage"] #toast { top: 200px; }
   </style>
 </head>
 <body>
@@ -812,6 +2478,25 @@
     <div id="header-title">
       <span id="header-icon">♨</span>
       <span id="header-name">九州八十八湯マップ</span>
+    </div>
+    <!-- expedition: 右側 円形進捗リング + 訪問数 -->
+    <div id="header-stat">
+      <svg id="header-ring" width="32" height="32" viewBox="0 0 36 36">
+        <!-- トラック -->
+        <circle cx="18" cy="18" r="15.9" fill="none"
+          stroke="rgba(26,38,32,0.12)" stroke-width="2.5"/>
+        <!-- 進捗アーク -->
+        <circle id="header-ring-fill" cx="18" cy="18" r="15.9" fill="none"
+          stroke="#C4622D" stroke-width="2.5"
+          stroke-dasharray="0 100" stroke-linecap="round"
+          transform="rotate(-90 18 18)"/>
+      </svg>
+      <div id="header-stat-text">
+        <div id="header-stat-label">VISITED</div>
+        <div id="header-stat-count">
+          <span id="header-visited-count">0</span><span id="header-total-count">/160</span>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -859,6 +2544,7 @@
     <div id="popup-header">
       <div style="flex:1;min-width:0">
         <div style="display:flex;align-items:center;margin-bottom:2px">
+          <span id="popup-number"></span>
           <span id="popup-onsenti"></span>
           <span id="popup-badge"></span>
         </div>
