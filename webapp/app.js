@@ -87,8 +87,11 @@ var _tileName   = (_activeKit.mapTile === 'mapbox' && !MAP_CONFIG.mapboxToken)
                   ? 'osm' : (_activeKit.mapTile || MAP_CONFIG.mapTile);
 var _tile       = _TILES[_tileName] || _TILES.osm;
 L.tileLayer(_tile.url, {
-  attribution: _tile.attr,
-  maxZoom    : _tile.maxZ,
+  attribution      : _tile.attr,
+  maxZoom          : _tile.maxZ,
+  updateWhenZooming: false,   // ズーム中はタイル更新しない（荒れを防ぐ）
+  updateWhenIdle   : true,    // 動作が止まってから読み込む
+  keepBuffer       : 4,       // 周辺タイルを多めに先読み
 }).addTo(map);
 
 // ズームコントロールを右下に

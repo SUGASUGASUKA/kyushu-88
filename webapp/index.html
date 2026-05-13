@@ -171,6 +171,10 @@
     .leaflet-zoom-animated {
       will-change: transform;
     }
+    /* タイル拡大時のピクセル荒れを軽減 */
+    .leaflet-tile {
+      image-rendering: auto;
+    }
     /* ズーム中はbackdrop-filterを無効化して描画負荷を下げる */
     body.map-zooming .fab {
       backdrop-filter: none;
