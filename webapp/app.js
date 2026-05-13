@@ -877,6 +877,10 @@ loadVisited();
 addMarkers();
 updateProgress();
 
+// ピンチズーム中はbackdrop-filterを無効化して描画を軽くする
+map.on('zoomstart', function() { document.body.classList.add('map-zooming'); });
+map.on('zoomend',   function() { document.body.classList.remove('map-zooming'); });
+
 // Service Worker 登録（PWA）
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('sw.js').catch(function() {});

@@ -165,6 +165,17 @@
       left: 0; right: 0;
       bottom: calc(60px + env(safe-area-inset-bottom));
     }
+    /* ピンチズーム高速化：LeafletのパネルをGPUレイヤーに昇格 */
+    .leaflet-map-pane,
+    .leaflet-tile-container,
+    .leaflet-zoom-animated {
+      will-change: transform;
+    }
+    /* ズーム中はbackdrop-filterを無効化して描画負荷を下げる */
+    body.map-zooming .fab {
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
+    }
 
     /* ===== フローティングボタン ===== */
     #fab-wrap {
