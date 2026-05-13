@@ -627,17 +627,8 @@
       font-size: 9px; font-weight: 400;
       color: #8B7B6E; letter-spacing: 0.28em;
     }
-    /* 右: 訪問数（JSが #header-stat に data-fn-count をセット） */
-    [data-kit="field-notes"] #header-stat {
-      display: flex; margin-left: auto; align-items: center; flex-shrink: 0;
-    }
-    [data-kit="field-notes"] #header-ring,
-    [data-kit="field-notes"] #header-stat-text { display: none; }
-    [data-kit="field-notes"] #header-stat::after {
-      content: attr(data-fn-count);
-      font-family: 'Noto Sans JP', sans-serif;
-      font-size: 9px; color: #8B7B6E; letter-spacing: 0.2em;
-    }
+    /* 右: 訪問数 — プログレスバーと重複するため非表示 */
+    [data-kit="field-notes"] #header-stat { display: none; }
 
     /* 進捗セクション: クリーム・"PROGRESS"ラベル・大明朝数字 */
     [data-kit="field-notes"] #progress-section {
