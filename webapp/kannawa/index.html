@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=2.0, user-scalable=yes, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="KNNW-2026">
+  <meta name="theme-color" content="#FAF6EC">
+  <meta name="description" content="KANNAWA 蒸気帯観察記録 ZINE / KNNW-2026 — 撮影地マップ。14点の蒸気観測点。">
+  <title>KANNAWA 蒸気帯観察記録 / KNNW-2026 ・ 撮影地マップ</title>
+
+  <!-- PWA -->
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="favicon-16.png">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+
+  <!-- OGP (SNSシェア用) -->
+  <meta property="og:title" content="KANNAWA 蒸気帯観察記録 / KNNW-2026">
+  <meta property="og:description" content="鉄輪 蒸気帯観察記録 ZINE / KNNW-2026 ─ 14点の蒸気観測点を地図で。">
+  <meta property="og:image" content="icons/icon-512.png">
+  <meta property="og:type" content="website">
+  <meta name="twitter:card" content="summary">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Shippori+Mincho:wght@400;700&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <style>
+    :root {
+      /* —— ZINE 配色：観察手帳の和紙地 + 墨 + 朱 —— */
+      --paper:        #FAF6EC;   /* 紙地（クリーム） */
+      --paper-soft:   #F2ECDD;   /* 帯・カードの地 */
+      --ink:          #1A1410;   /* 主テキスト（墨） */
+      --ink-soft:     #5A4E40;   /* 副テキスト */
+      --ink-muted:    #9A8E7E;   /* 計器目盛 */
+      --rule:         #2A2118;   /* 罫線（濃） */
+      --rule-soft:    #C9BEA8;   /* 罫線（淡） */
+      --shu:          #8C3A2B;   /* 朱差し */
+      --shu-deep:     #5C2418;
+      --shu-bg:       #F0E0D8;
+
+      --font-mono:    'JetBrains Mono', 'Courier New', monospace;
+      --font-mincho:  'Shippori Mincho', 'Hiragino Mincho ProN', serif;
+      --font-body:    'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif;
+
+      --shadow-card:  0 1px 0 rgba(26,20,16,0.06), 0 6px 18px rgba(26,20,16,0.10);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body {
+      height: 100%;
+      background: var(--paper);
+      color: var(--ink);
+      font-family: var(--font-body);
+      -webkit-text-size-adjust: 100%;
+      text-size-adjust: 100%;
+      overflow: hidden;
+    }
+
+    /* ============================================================
+       ヘッダー（観察日誌の表紙風 ─ 細帯）
+       ============================================================ */
+    #header {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      height: 56px;
+      padding: 6px 14px 0;
+      background: var(--paper);
+      border-bottom: 1px solid var(--rule);
+      z-index: 1000;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 1px;
+    }
+    #header-row1 {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      color: var(--ink-soft);
+      text-transform: uppercase;
+    }
+    #header-code   { font-weight: 700; color: var(--ink); }
+    #header-unit   { font-weight: 500; }
+    #header-row2 {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 12px;
+    }
+    #header-title {
+      font-family: var(--font-mincho);
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      color: var(--ink);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    #header-title .en {
+      font-family: var(--font-mono);
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 0.10em;
+      margin-right: 6px;
+    }
+    #header-subtitle {
+      font-family: var(--font-mono);
+      font-size: 10.5px;
+      font-weight: 500;
+      letter-spacing: 0.18em;
+      color: var(--ink-soft);
+      text-transform: uppercase;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    /* 上端の極細罫（活版風） */
+    #header::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 4px;
+      background: var(--rule);
+    }
+
+    /* ============================================================
+       地図
+       ============================================================ */
+    #map {
+      position: fixed;
+      top: 56px;
+      left: 0; right: 0;
+      bottom: 0;
+      background: var(--paper-soft);
+    }
+    /* Leaflet コントロールも ZINE トーンに */
+    .leaflet-control-zoom {
+      border: 1px solid var(--rule) !important;
+      border-radius: 0 !important;
+      box-shadow: var(--shadow-card) !important;
+      margin: 14px !important;
+    }
+    .leaflet-control-zoom a {
+      background: var(--paper) !important;
+      color: var(--ink) !important;
+      border: none !important;
+      border-bottom: 1px solid var(--rule-soft) !important;
+      font-family: var(--font-mono) !important;
+      font-weight: 500 !important;
+      width: 36px !important;
+      height: 36px !important;
+      line-height: 34px !important;
+    }
+    .leaflet-control-zoom a:last-child { border-bottom: none !important; }
+    .leaflet-control-zoom a:hover { background: var(--paper-soft) !important; }
+    .leaflet-control-attribution {
+      background: rgba(250,246,236,0.85) !important;
+      color: var(--ink-muted) !important;
+      font-family: var(--font-mono) !important;
+      font-size: 9.5px !important;
+      padding: 2px 6px !important;
+    }
+    .leaflet-control-attribution a { color: var(--ink-soft) !important; }
+
+    /* ============================================================
+       ナンバーピン（角型・墨地・白文字／VAPORレベル色のドット）
+       ============================================================ */
+    .knnw-pin {
+      position: relative;
+      width: 34px;
+      height: 40px;
+      cursor: pointer;
+      filter: drop-shadow(0 2px 4px rgba(26,20,16,0.35));
+    }
+    .knnw-pin .pin-body {
+      width: 34px;
+      height: 34px;
+      background: var(--ink);
+      color: var(--paper);
+      border: 1.5px solid var(--ink);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-mono);
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+    }
+    .knnw-pin .pin-stem {
+      position: absolute;
+      bottom: -1px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 0; height: 0;
+      border-left:  6px solid transparent;
+      border-right: 6px solid transparent;
+      border-top:   8px solid var(--ink);
+    }
+    /* 右上に VAPORレベル色のドット */
+    .knnw-pin .pin-dot {
+      position: absolute;
+      top: -3px; right: -3px;
+      width: 12px; height: 12px;
+      border-radius: 50%;
+      background: var(--shu);
+      border: 1.5px solid var(--paper);
+    }
+    /* 選択中のピンは反転 */
+    .knnw-pin.is-active .pin-body {
+      background: var(--paper);
+      color: var(--ink);
+    }
+    .knnw-pin.is-active .pin-stem {
+      border-top-color: var(--paper);
+      filter: drop-shadow(0 0 0 var(--ink));
+    }
+
+    /* ============================================================
+       ポップアップ（観察カード ─ 計器ログ風）
+       ============================================================ */
+    #popup-backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(26,20,16,0.18);
+      z-index: 1999;
+    }
+    #popup {
+      display: none;
+      position: fixed;
+      bottom: 14px;
+      left: 12px; right: 12px;
+      max-width: 440px;
+      margin: 0 auto;
+      background: var(--paper);
+      border: 1px solid var(--rule);
+      box-shadow: var(--shadow-card);
+      z-index: 2000;
+      max-height: calc(100vh - 90px);
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+    #popup.is-open, #popup-backdrop.is-open { display: block; }
+
+    /* 上端の細帯（活版風） */
+    #popup::before {
+      content: '';
+      display: block;
+      height: 3px;
+      background: var(--rule);
+    }
+
+    /* カードヘッダー */
+    .pop-head {
+      padding: 10px 14px 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      border-bottom: 1px solid var(--rule-soft);
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--ink-soft);
+    }
+    .pop-head-left {
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+    }
+    .pop-no {
+      font-family: var(--font-mono);
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--ink);
+      letter-spacing: 0.02em;
+      line-height: 1;
+    }
+    .pop-of {
+      color: var(--ink-muted);
+      font-size: 11px;
+    }
+    .pop-close, .pop-nav {
+      background: none;
+      border: 1px solid var(--rule-soft);
+      width: 28px; height: 28px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--ink-soft);
+      cursor: pointer;
+      line-height: 1;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .pop-close { font-size: 14px; }
+    .pop-close:hover, .pop-nav:hover { background: var(--paper-soft); color: var(--ink); }
+    .pop-nav:active { background: var(--ink); color: var(--paper); }
+
+    /* 写真エリア（ZINEレイアウトの中央写真） */
+    .pop-photo {
+      padding: 12px 14px 0;
+    }
+    .pop-photo-frame {
+      position: relative;
+      width: 100%;
+      background: var(--paper-soft);
+      border: 1px solid var(--rule-soft);
+      overflow: hidden;
+    }
+    .pop-photo-frame img {
+      display: block;
+      width: 100%;
+      height: auto;
+      max-height: 50vh;
+      object-fit: contain;
+      background: var(--paper-soft);
+    }
+    /* 写真上の左下キャプション（タイトル） */
+    .pop-photo-cap {
+      position: absolute;
+      left: 0; bottom: 0;
+      padding: 4px 9px 5px;
+      background: rgba(26,20,16,0.78);
+      color: var(--paper);
+      font-family: var(--font-mincho);
+      font-size: 12px;
+      letter-spacing: 0.05em;
+    }
+
+    /* 計器ログ：TIME / TEMP / HUMID / VIS / VAPOR */
+    .pop-log {
+      padding: 10px 14px 4px;
+      font-family: var(--font-mono);
+      font-size: 11.5px;
+      letter-spacing: 0.04em;
+      color: var(--ink);
+      line-height: 1.7;
+      word-break: keep-all;
+    }
+    .pop-log-time {
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      padding-bottom: 6px;
+      margin-bottom: 6px;
+      border-bottom: 1px dashed var(--rule-soft);
+      color: var(--ink);
+    }
+    .pop-log-time .sep {
+      color: var(--ink-muted);
+      margin: 0 6px;
+    }
+    .pop-log-row {
+      display: grid;
+      grid-template-columns: 60px 1fr;
+      gap: 10px;
+      padding: 1px 0;
+    }
+    .pop-log-key {
+      color: var(--ink-muted);
+      letter-spacing: 0.16em;
+      font-weight: 500;
+    }
+    .pop-log-val {
+      color: var(--ink);
+      font-weight: 500;
+    }
+    .pop-log-val .unit {
+      color: var(--ink-muted);
+      margin-left: 2px;
+      font-weight: 400;
+    }
+    .pop-log-val.vapor {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .vapor-pip {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 1px 7px 2px;
+      font-size: 10.5px;
+      font-weight: 700;
+      letter-spacing: 0.10em;
+      border: 1px solid var(--rule);
+      background: var(--paper);
+      color: var(--ink);
+    }
+    .vapor-pip::before {
+      content: '';
+      width: 7px; height: 7px;
+      border-radius: 50%;
+    }
+
+    /* 座標（LOC）はモノスペースで小さく罫線下に */
+    .pop-loc {
+      margin: 8px 14px 0;
+      padding: 8px 0;
+      border-top: 1px dashed var(--rule-soft);
+      font-family: var(--font-mono);
+      font-size: 10.5px;
+      color: var(--ink-soft);
+      letter-spacing: 0.06em;
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .pop-loc-key { color: var(--ink-muted); }
+
+    /* 道案内ボタン（控えめに、ZINE調） */
+    .pop-actions {
+      padding: 4px 14px 14px;
+      display: flex;
+      gap: 8px;
+    }
+    .pop-btn {
+      flex: 1;
+      padding: 11px 0;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      text-align: center;
+      text-decoration: none;
+      cursor: pointer;
+      border: 1px solid var(--rule);
+      background: var(--paper);
+      color: var(--ink);
+      transition: background 0.12s, color 0.12s;
+    }
+    .pop-btn:hover { background: var(--ink); color: var(--paper); }
+    .pop-btn.shu {
+      background: var(--ink);
+      color: var(--paper);
+    }
+    .pop-btn.shu:hover { background: var(--shu); border-color: var(--shu); }
+
+    /* 値が null（写真09のように）なら -- 表記 */
+    .pop-log-val.is-empty { color: var(--ink-muted); }
+
+    /* ============================================================
+       下端：観察者クレジット（控えめなフッター帯）
+       ============================================================ */
+    #credit {
+      position: fixed;
+      left: 12px;
+      /* Leaflet attribution が下端 ~22px を占めるため、上に積み上げる */
+      bottom: 30px;
+      padding: 5px 9px 6px;
+      background: rgba(250,246,236,0.92);
+      border: 1px solid var(--rule-soft);
+      font-family: var(--font-mono);
+      font-size: 9.5px;
+      letter-spacing: 0.10em;
+      color: var(--ink-soft);
+      z-index: 800;
+      pointer-events: none;
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+      max-width: calc(100vw - 24px);
+      white-space: nowrap;
+    }
+    /* 狭画面では「Etsuko Kanno / 2023」だけに省略してかぶりを完全回避 */
+    @media (max-width: 380px) {
+      #credit .obs-extra { display: none; }
+    }
+    #credit b {
+      font-weight: 700;
+      color: var(--ink);
+      letter-spacing: 0.06em;
+    }
+    #credit-ig {
+      pointer-events: auto;
+      color: var(--ink-soft);
+      text-decoration: underline;
+      text-decoration-color: var(--rule-soft);
+      text-underline-offset: 2px;
+    }
+    #credit-ig:hover { color: var(--ink); text-decoration-color: var(--ink); }
+    /* 開発用の編集リンク：本番（localhost以外）では非表示 */
+    #credit-check {
+      display: none;
+      pointer-events: auto;
+      margin-left: 8px;
+      padding: 1px 6px 2px;
+      color: var(--ink-soft);
+      text-decoration: none;
+      border: 1px solid var(--rule-soft);
+      font-size: 11px;
+      letter-spacing: 0;
+    }
+    body[data-env="dev"] #credit-check { display: inline; }
+    #credit-check:hover { background: var(--ink); color: var(--paper); }
+
+    /* ============================================================
+       右上FAB群（全体表示 / 現在地）
+       ============================================================ */
+    .fab-stack {
+      position: fixed;
+      top: 70px;
+      right: 14px;
+      z-index: 900;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .fab {
+      width: 44px; height: 44px;
+      background: var(--paper);
+      border: 1px solid var(--rule);
+      box-shadow: var(--shadow-card);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-mono);
+      font-size: 9.5px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      color: var(--ink);
+      line-height: 1.1;
+      text-align: center;
+      padding: 0;
+    }
+    .fab:active { background: var(--paper-soft); }
+    .fab.is-on  { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+    .fab svg { width: 20px; height: 20px; stroke: currentColor; fill: none; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+    .fab.is-loading svg { animation: spin 1s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* 位置情報トースト */
+    #locate-toast {
+      display: none;
+      position: fixed;
+      top: 70px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--ink);
+      color: var(--paper);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.10em;
+      padding: 7px 14px;
+      border: 1px solid var(--ink);
+      max-width: calc(100vw - 100px);
+      text-align: center;
+      z-index: 1500;
+      box-shadow: var(--shadow-card);
+    }
+    #locate-toast.is-on { display: block; }
+
+    /* 現在地マーカー（青ドット）─ ZINE調にやや控えめな青 */
+    .me-pulse {
+      width: 18px; height: 18px;
+      border-radius: 50%;
+      background: #3B6EA8;
+      border: 2.5px solid var(--paper);
+      box-shadow: 0 0 0 2px rgba(59,110,168,0.35), 0 1px 4px rgba(26,20,16,0.35);
+      position: relative;
+    }
+    .me-pulse::after {
+      content: '';
+      position: absolute;
+      inset: -8px;
+      border-radius: 50%;
+      border: 1.5px solid rgba(59,110,168,0.6);
+      animation: ping 1.8s ease-out infinite;
+    }
+    @keyframes ping {
+      0%   { transform: scale(0.6); opacity: 0.9; }
+      80%  { transform: scale(1.6); opacity: 0;   }
+      100% { transform: scale(1.6); opacity: 0;   }
+    }
+
+    /* ============================================================
+       狭画面（縦長スマホ）の調整
+       ============================================================ */
+    @media (max-height: 640px) {
+      .pop-photo-frame img { max-height: 38vh; }
+    }
+    @media (max-width: 480px) {
+      #header-subtitle { display: none; }
+    }
+    @media (max-width: 360px) {
+      #header-title { font-size: 16px; }
+      #header-title .en { display: none; }   /* 狭画面では「蒸気帯観察記録」のみ */
+      .pop-log-row { grid-template-columns: 56px 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <header id="header">
+    <div id="header-row1">
+      <span id="header-code">KNNW-2026</span>
+      <span id="header-unit">— 014 SHEETS / 14 SPOTS</span>
+    </div>
+    <div id="header-row2">
+      <h1 id="header-title"><span class="en">KANNAWA</span>蒸気帯観察記録</h1>
+      <span id="header-subtitle">VAPOR FIELD NOTES</span>
+    </div>
+  </header>
+
+  <div id="map" role="application" aria-label="鉄輪 撮影地マップ"></div>
+
+  <div class="fab-stack">
+    <button id="btn-fit" class="fab" type="button" aria-label="全スポットを表示" title="全スポットを表示">
+      <span>FIT<br>014</span>
+    </button>
+    <button id="btn-locate" class="fab" type="button" aria-label="現在地を表示" title="現在地を表示">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <circle cx="12" cy="12" r="3"></circle>
+        <circle cx="12" cy="12" r="8"></circle>
+        <line x1="12" y1="2" x2="12" y2="5"></line>
+        <line x1="12" y1="19" x2="12" y2="22"></line>
+        <line x1="2" y1="12" x2="5" y2="12"></line>
+        <line x1="19" y1="12" x2="22" y2="12"></line>
+      </svg>
+    </button>
+  </div>
+
+  <!-- 位置情報トースト（許可待ち・取得失敗のメッセージ） -->
+  <div id="locate-toast" role="status" aria-live="polite"></div>
+
+  <div id="credit">
+    <b>OBSERVER</b>
+    <a href="https://www.instagram.com/beppu_kannawa/" target="_blank" rel="noopener" id="credit-ig">Etsuko Kanno</a>
+    <span class="obs-extra"> ／ Beppu, Oita</span>
+    ／ © 2026
+    <a href="check.html" id="credit-check" title="位置チェック画面（開発用）">✎</a>
+  </div>
+
+  <!-- 観察カード（ポップアップ） -->
+  <div id="popup-backdrop"></div>
+  <article id="popup" role="dialog" aria-labelledby="pop-title" aria-modal="true">
+    <header class="pop-head">
+      <div class="pop-head-left">
+        <button class="pop-nav" id="pop-prev" type="button" aria-label="前のスポット">◀</button>
+        <span class="pop-no" id="pop-no">01</span>
+        <span class="pop-of">/ 14 ・ KNNW-2026</span>
+        <button class="pop-nav" id="pop-next" type="button" aria-label="次のスポット">▶</button>
+      </div>
+      <button class="pop-close" id="pop-close" type="button" aria-label="閉じる">✕</button>
+    </header>
+
+    <div class="pop-photo">
+      <div class="pop-photo-frame">
+        <img id="pop-img" alt="" loading="lazy">
+        <span class="pop-photo-cap" id="pop-cap" hidden></span>
+      </div>
+    </div>
+
+    <div class="pop-log">
+      <div class="pop-log-time" id="pop-time" aria-label="観測時刻と気象">
+        <!-- TIME 07:09 ・ TEMP 14°C ・ HUMID 60% ・ VIS 10.0m -->
+      </div>
+      <div class="pop-log-row">
+        <span class="pop-log-key">VAPOR</span>
+        <span class="pop-log-val vapor" id="pop-vapor"></span>
+      </div>
+    </div>
+
+    <div class="pop-loc">
+      <span><span class="pop-loc-key">LOC //</span> <span id="pop-loc"></span></span>
+    </div>
+
+    <div class="pop-actions">
+      <a class="pop-btn" id="pop-gmaps" href="#" target="_blank" rel="noopener">Google Maps</a>
+      <a class="pop-btn shu" id="pop-route" href="#" target="_blank" rel="noopener">ROUTE</a>
+    </div>
+  </article>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="map-config.js"></script>
+  <script src="kannawa-data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

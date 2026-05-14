@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>位置チェック / KNNW-2026 — 14スポット見直し</title>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Shippori+Mincho:wght@700&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <style>
+    :root {
+      --paper:      #FAF6EC;
+      --paper-soft: #F2ECDD;
+      --ink:        #1A1410;
+      --ink-soft:   #5A4E40;
+      --ink-muted:  #9A8E7E;
+      --rule:       #2A2118;
+      --rule-soft:  #C9BEA8;
+      --shu:        #8C3A2B;
+      --ok:         #3D5A3E;
+      --warn:       #C26B3A;
+      --font-mono:  'JetBrains Mono', 'Courier New', monospace;
+      --font-mincho:'Shippori Mincho', serif;
+      --font-body:  'Noto Sans JP', sans-serif;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--paper);
+      color: var(--ink);
+      font-family: var(--font-body);
+      padding: 0 0 80px;
+      line-height: 1.6;
+    }
+
+    /* —— ヘッダー ———————————————————— */
+    header {
+      position: sticky;
+      top: 0;
+      background: var(--paper);
+      border-bottom: 2px solid var(--rule);
+      padding: 14px 18px 12px;
+      z-index: 100;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .head-l h1 {
+      font-family: var(--font-mincho);
+      font-size: 19px;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+    }
+    .head-l .sub {
+      font-family: var(--font-mono);
+      font-size: 10.5px;
+      color: var(--ink-soft);
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      margin-top: 2px;
+    }
+    .head-r {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .btn {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      padding: 10px 14px;
+      border: 1px solid var(--rule);
+      background: var(--paper);
+      color: var(--ink);
+      cursor: pointer;
+      text-decoration: none;
+      transition: background .12s, color .12s;
+    }
+    .btn:hover { background: var(--ink); color: var(--paper); }
+    .btn-primary { background: var(--ink); color: var(--paper); }
+    .btn-primary:hover { background: var(--shu); border-color: var(--shu); }
+    .btn-back { background: transparent; }
+
+    /* —— 操作ヒント帯 ———————————————— */
+    .hint {
+      background: var(--paper-soft);
+      border-bottom: 1px solid var(--rule-soft);
+      padding: 10px 18px;
+      font-size: 12.5px;
+      color: var(--ink-soft);
+      line-height: 1.8;
+    }
+    .hint b { color: var(--ink); }
+    .hint code {
+      font-family: var(--font-mono);
+      background: var(--paper);
+      padding: 1px 5px;
+      border: 1px solid var(--rule-soft);
+      font-size: 11px;
+    }
+
+    /* —— 各カード ———————————————————— */
+    .grid {
+      padding: 18px;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(420px, 1fr));
+      gap: 18px;
+    }
+    .card {
+      background: var(--paper);
+      border: 1px solid var(--rule);
+      box-shadow: 0 1px 0 rgba(26,20,16,0.06), 0 4px 14px rgba(26,20,16,0.07);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    .card-head {
+      border-bottom: 1px solid var(--rule-soft);
+      padding: 8px 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--ink-soft);
+    }
+    .card-no {
+      font-family: var(--font-mono);
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--ink);
+      letter-spacing: 0.02em;
+    }
+    .card-state {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      padding: 2px 8px;
+      border: 1px solid var(--rule-soft);
+      color: var(--ink-muted);
+    }
+    .card-state.ok   { color: var(--ok);   border-color: var(--ok);   }
+    .card-state.edit { color: var(--warn); border-color: var(--warn); }
+
+    /* —— 写真とミニ地図 並列 ———————— */
+    .card-body {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      min-height: 220px;
+    }
+    .card-photo {
+      position: relative;
+      background: var(--paper-soft);
+      border-right: 1px solid var(--rule-soft);
+      overflow: hidden;
+    }
+    .card-photo img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      cursor: zoom-in;
+    }
+    .card-photo .cap {
+      position: absolute;
+      left: 0; bottom: 0;
+      padding: 3px 8px 4px;
+      background: rgba(26,20,16,0.78);
+      color: var(--paper);
+      font-family: var(--font-mincho);
+      font-size: 11px;
+      letter-spacing: 0.05em;
+    }
+    .card-map {
+      width: 100%;
+      min-height: 220px;
+    }
+
+    /* —— 座標エディタ ———————————————— */
+    .card-foot {
+      padding: 10px 12px 12px;
+      border-top: 1px solid var(--rule-soft);
+      background: var(--paper);
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .row label {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.14em;
+      color: var(--ink-muted);
+      text-transform: uppercase;
+      flex-shrink: 0;
+      width: 44px;
+    }
+    .input {
+      flex: 1;
+      min-width: 0;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      padding: 7px 9px;
+      border: 1px solid var(--rule-soft);
+      background: var(--paper);
+      color: var(--ink);
+    }
+    .input.dms { font-size: 11.5px; }
+    .input:focus {
+      outline: none;
+      border-color: var(--ink);
+      background: var(--paper-soft);
+    }
+    .actions {
+      display: flex;
+      gap: 6px;
+      margin-top: 4px;
+      flex-wrap: wrap;
+    }
+    .mini-btn {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      padding: 6px 10px;
+      border: 1px solid var(--rule-soft);
+      background: var(--paper);
+      color: var(--ink);
+      cursor: pointer;
+      text-decoration: none;
+      text-transform: uppercase;
+    }
+    .mini-btn:hover { background: var(--paper-soft); border-color: var(--rule); }
+    .mini-btn.reset { color: var(--ink-muted); }
+    .mini-btn.confirm.is-on {
+      background: var(--ok);
+      color: var(--paper);
+      border-color: var(--ok);
+    }
+
+    /* —— エクスポート結果 ———————————— */
+    #export {
+      position: fixed;
+      left: 0; right: 0;
+      bottom: 0;
+      max-height: 60vh;
+      background: var(--paper);
+      border-top: 2px solid var(--rule);
+      box-shadow: 0 -4px 18px rgba(26,20,16,0.18);
+      transform: translateY(100%);
+      transition: transform 0.25s;
+      z-index: 200;
+      display: flex;
+      flex-direction: column;
+    }
+    #export.is-open { transform: translateY(0); }
+    #export-head {
+      padding: 12px 18px;
+      border-bottom: 1px solid var(--rule-soft);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+    }
+    #export-head h2 {
+      font-family: var(--font-mincho);
+      font-size: 15px;
+      letter-spacing: 0.06em;
+    }
+    #export-head .desc {
+      font-family: var(--font-mono);
+      font-size: 10.5px;
+      color: var(--ink-soft);
+      letter-spacing: 0.12em;
+    }
+    #export-body {
+      padding: 14px 18px 18px;
+      overflow-y: auto;
+    }
+    #export-text {
+      width: 100%;
+      min-height: 220px;
+      font-family: var(--font-mono);
+      font-size: 11.5px;
+      padding: 12px;
+      background: var(--paper-soft);
+      border: 1px solid var(--rule-soft);
+      color: var(--ink);
+      line-height: 1.6;
+      resize: vertical;
+    }
+
+    @media (max-width: 480px) {
+      .card-body { grid-template-columns: 1fr; }
+      .card-photo { border-right: none; border-bottom: 1px solid var(--rule-soft); min-height: 200px; }
+      .card-photo img { height: 200px; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="head-l">
+      <h1>位置チェック ／ 14スポット見直し</h1>
+      <div class="sub">KNNW-2026 — Coordinate Verification</div>
+    </div>
+    <div class="head-r">
+      <a class="btn btn-back" href="index.html">← 地図へ戻る</a>
+      <button class="btn" id="btn-reset-all" type="button">全リセット</button>
+      <button class="btn btn-primary" id="btn-export" type="button">修正を書き出す</button>
+    </div>
+  </header>
+
+  <div class="hint">
+    各写真の隣のミニ地図で、<b>ピンをドラッグ</b>すると位置を修正できます。または下の <code>DMS</code> / <code>緯度経度</code> を直接編集してもOK。確認できた写真は <b>OK</b> ボタンを押して印を付けてください。最後に <b>「修正を書き出す」</b> を押すと、 <code>kannawa-data.js</code> に貼り戻せる形式で出力します。
+  </div>
+
+  <div class="grid" id="grid"></div>
+
+  <!-- 書き出しパネル -->
+  <section id="export" aria-hidden="true">
+    <div id="export-head">
+      <div>
+        <h2>修正データ</h2>
+        <div class="desc">下のテキストを kannawa-data.js に貼り戻してください</div>
+      </div>
+      <div style="display:flex; gap:8px;">
+        <button class="btn" id="btn-copy" type="button">コピー</button>
+        <button class="btn btn-back" id="btn-close-export" type="button">閉じる</button>
+      </div>
+    </div>
+    <div id="export-body">
+      <textarea id="export-text" readonly></textarea>
+    </div>
+  </section>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="kannawa-data.js"></script>
+  <script>
+  (function () {
+    'use strict';
+    var MAPBOX_TOKEN =
+      'pk.eyJ1IjoiaGFjaGloYWNoaTg4IiwiYSI6ImNtcDRzaWw4bTBzbGoycm9hdmtmZHVuNHQifQ.JeR32__gTh36TllufAJtAA';
+
+    // ローカル状態（編集中の座標）— 元データをコピーして保持
+    var state = KANNAWA_DATA.map(function (s) {
+      return {
+        no: s.no,
+        title: s.title,
+        origLat: s.lat,
+        origLng: s.lng,
+        origDms: s.locDms,
+        lat: s.lat,
+        lng: s.lng,
+        dms: s.locDms,
+        confirmed: false,
+        edited: false
+      };
+    });
+
+    // —— DMS <-> 十進度 ————————————————————————————————
+    // 例: 33°19'03.2"N 131°28'43.6"E
+    function dmsToDec(dms) {
+      // 角度区切り文字のゆらぎを吸収
+      var s = dms.replace(/[°º]/g, '°').replace(/[′']/g, "'").replace(/[″"]/g, '"');
+      var m = s.match(/(\d{1,3})°(\d{1,2})'([\d.]+)"\s*([NS])\s+(\d{1,3})°(\d{1,2})'([\d.]+)"\s*([EW])/i);
+      if (!m) return null;
+      function combine(d, mi, se, hemi) {
+        var v = (+d) + (+mi)/60 + (+se)/3600;
+        return /[SW]/i.test(hemi) ? -v : v;
+      }
+      return {
+        lat: combine(m[1], m[2], m[3], m[4]),
+        lng: combine(m[5], m[6], m[7], m[8])
+      };
+    }
+    function decToDms(lat, lng) {
+      function part(v, posH, negH) {
+        var h = v < 0 ? negH : posH;
+        v = Math.abs(v);
+        var d = Math.floor(v);
+        var minF = (v - d) * 60;
+        var mi = Math.floor(minF);
+        var se = ((minF - mi) * 60);
+        return d + '°' + String(mi).padStart(2, '0') + "'" + se.toFixed(1) + '"' + h;
+      }
+      return part(lat, 'N', 'S') + ' ' + part(lng, 'E', 'W');
+    }
+
+    // —— カード生成 ————————————————————————————————————
+    var grid = document.getElementById('grid');
+    var maps = {};        // no -> L.Map
+    var markers = {};     // no -> L.Marker
+
+    state.forEach(function (sp, idx) {
+      var card = document.createElement('article');
+      card.className = 'card';
+      card.dataset.no = sp.no;
+      card.innerHTML = [
+        '<div class="card-head">',
+          '<div><span class="card-no">', sp.no, '</span> <span style="color:var(--ink-muted)">/ 14 ・ KNNW-2026</span></div>',
+          '<span class="card-state" data-state>UNCHECKED</span>',
+        '</div>',
+        '<div class="card-body">',
+          '<div class="card-photo">',
+            '<img src="', (KANNAWA_DATA[idx].thumb || KANNAWA_DATA[idx].photo), '" data-full="', KANNAWA_DATA[idx].photo, '" alt="KNNW-', sp.no, '">',
+            (sp.title ? '<span class="cap">' + sp.title + '</span>' : ''),
+          '</div>',
+          '<div class="card-map" id="map-', sp.no, '"></div>',
+        '</div>',
+        '<div class="card-foot">',
+          '<div class="row">',
+            '<label>DMS</label>',
+            '<input type="text" class="input dms" data-field="dms" value="', sp.dms, '">',
+          '</div>',
+          '<div class="row">',
+            '<label>LAT</label>',
+            '<input type="text" class="input" data-field="lat" value="', sp.lat.toFixed(6), '">',
+            '<label style="width:auto">LNG</label>',
+            '<input type="text" class="input" data-field="lng" value="', sp.lng.toFixed(6), '">',
+          '</div>',
+          '<div class="actions">',
+            '<button class="mini-btn confirm" data-act="confirm">OK ここで合ってる</button>',
+            '<a class="mini-btn" href="https://www.google.com/maps/search/?api=1&query=', sp.lat, ',', sp.lng, '" target="_blank" rel="noopener">Google Maps</a>',
+            '<a class="mini-btn" href="https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=', sp.lat, ',', sp.lng, '" target="_blank" rel="noopener">Street View</a>',
+            '<button class="mini-btn reset" data-act="reset">元に戻す</button>',
+          '</div>',
+        '</div>'
+      ].join('');
+      grid.appendChild(card);
+
+      // ミニ地図初期化
+      var m = L.map('map-' + sp.no, {
+        center: [sp.lat, sp.lng],
+        zoom: 17,
+        zoomControl: false,
+        attributionControl: false,
+        scrollWheelZoom: false
+      });
+      L.tileLayer(
+        'https://api.mapbox.com/styles/v1/mapbox/light-v11/tiles/{z}/{x}/{y}{r}?access_token=' + MAPBOX_TOKEN,
+        { tileSize: 512, zoomOffset: -1, maxZoom: 19 }
+      ).addTo(m);
+
+      // ナンバーピン（ドラッグ可）
+      var pinIcon = L.divIcon({
+        className: 'check-pin-wrap',
+        html:
+          '<div style="position:relative;width:34px;height:40px;filter:drop-shadow(0 2px 4px rgba(26,20,16,0.35))">' +
+            '<div style="width:34px;height:34px;background:#1A1410;color:#FAF6EC;border:1.5px solid #1A1410;font-family:\'JetBrains Mono\',monospace;font-size:14px;font-weight:700;display:flex;align-items:center;justify-content:center">' + sp.no + '</div>' +
+            '<div style="position:absolute;bottom:-1px;left:50%;transform:translateX(-50%);width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent;border-top:8px solid #1A1410"></div>' +
+          '</div>',
+        iconSize: [34, 40],
+        iconAnchor: [17, 39]
+      });
+      var marker = L.marker([sp.lat, sp.lng], { icon: pinIcon, draggable: true }).addTo(m);
+      maps[sp.no] = m;
+      markers[sp.no] = marker;
+
+      marker.on('drag', function (e) {
+        var ll = e.target.getLatLng();
+        updateState(sp.no, ll.lat, ll.lng, 'drag', card);
+      });
+      marker.on('dragend', function () {
+        // ズーム/中心は維持
+      });
+
+      // 入力欄編集 → 状態更新
+      card.querySelector('[data-field="dms"]').addEventListener('change', function (e) {
+        var d = dmsToDec(e.target.value);
+        if (d) updateState(sp.no, d.lat, d.lng, 'dms', card);
+        else e.target.style.borderColor = 'var(--warn)';
+      });
+      ['lat', 'lng'].forEach(function (k) {
+        card.querySelector('[data-field="' + k + '"]').addEventListener('change', function () {
+          var lat = parseFloat(card.querySelector('[data-field="lat"]').value);
+          var lng = parseFloat(card.querySelector('[data-field="lng"]').value);
+          if (!isNaN(lat) && !isNaN(lng)) updateState(sp.no, lat, lng, 'num', card);
+        });
+      });
+
+      // 写真をクリックで等倍表示
+      card.querySelector('.card-photo img').addEventListener('click', function (e) {
+        window.open(e.target.dataset.full, '_blank');
+      });
+
+      // OK / Reset
+      card.querySelector('[data-act="confirm"]').addEventListener('click', function () {
+        var s = findState(sp.no);
+        s.confirmed = !s.confirmed;
+        renderState(s, card);
+      });
+      card.querySelector('[data-act="reset"]').addEventListener('click', function () {
+        var s = findState(sp.no);
+        s.lat = s.origLat; s.lng = s.origLng; s.dms = s.origDms;
+        s.edited = false; s.confirmed = false;
+        marker.setLatLng([s.lat, s.lng]);
+        m.setView([s.lat, s.lng], 17);
+        card.querySelector('[data-field="dms"]').value = s.dms;
+        card.querySelector('[data-field="dms"]').style.borderColor = '';
+        card.querySelector('[data-field="lat"]').value = s.lat.toFixed(6);
+        card.querySelector('[data-field="lng"]').value = s.lng.toFixed(6);
+        renderState(s, card);
+      });
+    });
+
+    function findState(no) {
+      for (var i = 0; i < state.length; i++) if (state[i].no === no) return state[i];
+      return null;
+    }
+
+    function updateState(no, lat, lng, src, card) {
+      var s = findState(no);
+      s.lat = lat;
+      s.lng = lng;
+      s.dms = decToDms(lat, lng);
+      s.edited = (Math.abs(lat - s.origLat) > 1e-6) || (Math.abs(lng - s.origLng) > 1e-6);
+      if (s.edited) s.confirmed = false;
+
+      // 入力欄の同期（変更元以外を更新）
+      if (src !== 'dms') {
+        card.querySelector('[data-field="dms"]').value = s.dms;
+        card.querySelector('[data-field="dms"]').style.borderColor = '';
+      }
+      if (src !== 'num') {
+        card.querySelector('[data-field="lat"]').value = s.lat.toFixed(6);
+        card.querySelector('[data-field="lng"]').value = s.lng.toFixed(6);
+      }
+      // ピン位置同期
+      if (src !== 'drag') {
+        markers[no].setLatLng([s.lat, s.lng]);
+        maps[no].panTo([s.lat, s.lng]);
+      }
+      renderState(s, card);
+    }
+
+    function renderState(s, card) {
+      var el = card.querySelector('[data-state]');
+      var btn = card.querySelector('[data-act="confirm"]');
+      btn.classList.toggle('is-on', s.confirmed);
+      btn.textContent = s.confirmed ? '✓ OK' : 'OK ここで合ってる';
+      if (s.confirmed) {
+        el.textContent = 'CONFIRMED';
+        el.className = 'card-state ok';
+      } else if (s.edited) {
+        el.textContent = 'EDITED';
+        el.className = 'card-state edit';
+      } else {
+        el.textContent = 'UNCHECKED';
+        el.className = 'card-state';
+      }
+    }
+
+    // —— エクスポート ————————————————————————————————
+    document.getElementById('btn-export').addEventListener('click', function () {
+      // 修正があったスポットだけ抽出
+      var changed = state.filter(function (s) { return s.edited; });
+      var lines = [];
+      lines.push('// —— 修正された LOC（' + changed.length + ' 件 ／ ' + state.length + '）——');
+      lines.push('// 以下の値で kannawa-data.js を更新してください。');
+      lines.push('');
+      if (changed.length === 0) {
+        lines.push('// 変更なし。すべての位置がオリジナルのままです。');
+      }
+      changed.forEach(function (s) {
+        lines.push('// KNNW-' + s.no);
+        lines.push('//   旧 ' + s.origDms);
+        lines.push('//   新 ' + s.dms);
+        lines.push('  // no: "' + s.no + '" の locDms/lat/lng を以下に差し替え：');
+        lines.push('  locDms: "' + s.dms.replace(/"/g, '\\"') + '",');
+        lines.push('  lat: ' + s.lat.toFixed(6) + ',');
+        lines.push('  lng: ' + s.lng.toFixed(6) + ',');
+        lines.push('');
+      });
+      // 検収用に CONFIRMED フラグ集計
+      var ok = state.filter(function (s) { return s.confirmed && !s.edited; }).length;
+      var okEd = state.filter(function (s) { return s.confirmed && s.edited; }).length;
+      lines.push('// —— 検収サマリ —————————————————————');
+      lines.push('// CONFIRMED (元のまま): ' + ok);
+      lines.push('// CONFIRMED (修正済み): ' + okEd);
+      lines.push('// UNCHECKED            : ' + (state.length - ok - okEd));
+      document.getElementById('export-text').value = lines.join('\n');
+      document.getElementById('export').classList.add('is-open');
+    });
+    document.getElementById('btn-close-export').addEventListener('click', function () {
+      document.getElementById('export').classList.remove('is-open');
+    });
+    document.getElementById('btn-copy').addEventListener('click', function () {
+      var ta = document.getElementById('export-text');
+      ta.select();
+      document.execCommand('copy');
+      this.textContent = 'コピーした';
+      var self = this;
+      setTimeout(function () { self.textContent = 'コピー'; }, 1500);
+    });
+    document.getElementById('btn-reset-all').addEventListener('click', function () {
+      if (!confirm('全カードを元の座標に戻します。よろしいですか？')) return;
+      state.forEach(function (s) {
+        var card = document.querySelector('.card[data-no="' + s.no + '"]');
+        card.querySelector('[data-act="reset"]').click();
+      });
+    });
+
+    // 初期スクロール位置を一番上に
+    window.scrollTo(0, 0);
+  })();
+  </script>
+</body>
+</html>
