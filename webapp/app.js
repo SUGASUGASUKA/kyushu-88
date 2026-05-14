@@ -39,7 +39,7 @@ function toggleVisited(id) {
   var isFn  = MAP_CONFIG.designKit === 'field-notes';
   if (visitedSet.has(id)) {
     visitedSet.delete(id);
-    showToast(isEx ? '↩ 踏破を取り消しました' : isSw ? '取り消しました' : '↩ 取り消しました');
+    showToast(isEx ? '↩ 踏破を取り消しました' : isSw ? 'REMOVED' : '↩ 取り消しました');
   } else {
     visitedSet.add(id);
     showToast(isEx

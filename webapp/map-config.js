@@ -97,7 +97,7 @@ var _DESIGN_KITS = {
   //  Palette: ink #0E0E0E / white #FFFFFF / accent #D6442C / gray #8A8A8A
   // ----------------------------------------------------------
   'swiss-minimal': {
-    mapTile:      'gsi',
+    mapTile:      'osm',
     bgPage:       '#FFFFFF',
     bgCard:       '#FFFFFF',
     bgHeader:     '#FFFFFF',
