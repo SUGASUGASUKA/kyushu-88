@@ -39,7 +39,7 @@ function toggleVisited(id) {
   var isFn  = MAP_CONFIG.designKit === 'field-notes';
   if (visitedSet.has(id)) {
     visitedSet.delete(id);
-    showToast(isEx ? '↩ 踏破を取り消しました' : '↩ 取り消しました');
+    showToast(isEx ? '↩ 踏破を取り消しました' : isSw ? '取り消しました' : '↩ 取り消しました');
   } else {
     visitedSet.add(id);
     showToast(isEx
@@ -477,7 +477,14 @@ function renderPanel() {
     });
   } else if (MAP_CONFIG.designKit === 'swiss-minimal') {
     document.getElementById('panel-title').textContent = 'INDEX';
-    document.getElementById('panel-count').textContent = n + ' / ' + tot;
+    document.getElementById('panel-count').textContent = '';
+    var swStats = document.getElementById('sw-stats');
+    if (swStats) {
+      swStats.innerHTML =
+        '<div class="sw-stat"><div class="sw-stat-num">' + tot + '</div><div class="sw-stat-label">ALL</div></div>'
+        + '<div class="sw-stat"><div class="sw-stat-num">' + (tot - n) + '</div><div class="sw-stat-label">PENDING</div></div>'
+        + '<div class="sw-stat"><div class="sw-stat-num">' + n + '</div><div class="sw-stat-label">VISITED</div></div>';
+    }
     var swFilterMap = { all: 'ALL', unvisited: 'PENDING', visited: 'VISITED' };
     document.querySelectorAll('.filter-btn').forEach(function(b) {
       b.textContent = swFilterMap[b.dataset.filter] || b.textContent;
@@ -668,8 +675,8 @@ function switchTab(tab) {
       progressSec.style.display = 'none';
       panel.style.top = 'env(safe-area-inset-top, 0px)';
     } else if (isSw) {
-      progressSec.style.display = '';
-      panel.style.top = '144px'; // header(64) + progress(80)
+      progressSec.style.display = 'none';
+      panel.style.top = '64px'; // header(64) のみ・progressは非表示
     } else if (isRt) {
       // retro-travel: ヘッダーのみ表示、プログレスカードは非表示
       progressSec.style.display = 'none';
@@ -682,8 +689,8 @@ function switchTab(tab) {
       progressSec.style.display = '';
       panel.style.top = '132px';
     }
-    panel.style.bottom  = (isEx || isPop || isRt || isFn) ? '0' : 'calc(60px + env(safe-area-inset-bottom))';
-    panel.style.display = (isEx || isPop || isRt || isFn) ? 'flex' : 'block';
+    panel.style.bottom  = (isEx || isPop || isRt || isFn || isSw) ? '0' : 'calc(60px + env(safe-area-inset-bottom))';
+    panel.style.display = (isEx || isPop || isRt || isFn || isSw) ? 'flex' : 'block';
     navList.classList.add('active');
     renderPanel();
   } else if (tab === 'backup') {

@@ -1177,6 +1177,65 @@
       border-color: #D6442C; color: #D6442C;
     }
 
+    /* 一覧パネル: Flex縦積み（ヘッダー固定・リストスクロール） */
+    [data-kit="swiss-minimal"] #panel {
+      flex-direction: column;
+      overflow: hidden;
+    }
+    [data-kit="swiss-minimal"] #panel-header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 16px 20px 14px;
+      border-bottom: 1.5px solid #0E0E0E;
+      flex-shrink: 0;
+    }
+    [data-kit="swiss-minimal"] #panel-title {
+      font-family: 'Inter', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.22em;
+      color: #8A8A8A;
+      text-transform: uppercase;
+    }
+    [data-kit="swiss-minimal"] #panel-count { display: none; }
+    /* sw-stats: 統計ブロック（swiss-minimal 専用） */
+    #sw-stats { display: none; }
+    [data-kit="swiss-minimal"] #sw-stats {
+      display: flex;
+      gap: 24px;
+      align-items: flex-end;
+    }
+    .sw-stat {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 1px;
+    }
+    .sw-stat-num {
+      font-family: 'Inter', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      font-size: 32px;
+      font-weight: 400;
+      color: #0E0E0E;
+      letter-spacing: -0.04em;
+      font-variant-numeric: tabular-nums;
+      line-height: 1;
+    }
+    .sw-stat-label {
+      font-family: 'Inter', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      color: #8A8A8A;
+      text-transform: uppercase;
+    }
+    [data-kit="swiss-minimal"] #panel-filter { flex-shrink: 0; }
+    [data-kit="swiss-minimal"] #panel-list {
+      flex: 1;
+      overflow-y: auto;
+      padding-bottom: calc(60px + env(safe-area-inset-bottom));
+    }
+
     /* バックアップセクション */
     [data-kit="swiss-minimal"] .backup-section {
       box-shadow: none; border-radius: 0;
@@ -2574,6 +2633,7 @@
     <div id="panel-header">
       <span id="panel-title">スタンプ一覧</span>
       <span id="panel-count"></span>
+      <div id="sw-stats"></div>
     </div>
     <div id="panel-filter">
       <button class="filter-btn active" data-filter="all">すべて</button>
