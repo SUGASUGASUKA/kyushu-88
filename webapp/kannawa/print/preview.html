@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>KANNAWA 蒸気帯観察記録 ／ 撮影地マップ ── 付録紙プレビュー</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Shippori+Mincho:wght@400;700&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    /* —— 印刷時の用紙設定（A6縦・塗り足し3mm） —— */
+    @page {
+      size: A6 portrait;
+      margin: 0;
+    }
+    @media print {
+      html, body { background: #fff; margin: 0; padding: 0; }
+      .wrap { padding: 0; min-height: 0; }
+      .stage { box-shadow: none; }
+      .crop { display: none; }
+      .controls { display: none; }
+    }
+
+    /* —— 画面プレビュー —— */
+    :root {
+      --paper:      #FAF6EC;
+      --ink:        #1A1410;
+      --ink-soft:   #5A4E40;
+      --rule-soft:  #C9BEA8;
+      --font-mono:    'JetBrains Mono', 'Consolas', monospace;
+      --font-mincho:  'Shippori Mincho', '游明朝', 'YuMincho', serif;
+      --font-body:    'Noto Sans JP', sans-serif;
+    }
+    html, body {
+      margin: 0; padding: 0;
+      background: #DDD6C5;
+      font-family: var(--font-body);
+      color: var(--ink);
+    }
+
+    .controls {
+      position: sticky;
+      top: 0;
+      background: rgba(26,20,16,0.92);
+      color: var(--paper);
+      padding: 10px 16px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      z-index: 100;
+      display: flex;
+      gap: 18px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .controls b { color: var(--paper); font-weight: 700; letter-spacing: 0.16em; }
+    .controls .pill {
+      border: 1px solid var(--paper);
+      padding: 3px 10px;
+      text-transform: uppercase;
+    }
+    .controls a, .controls button {
+      background: var(--paper);
+      color: var(--ink);
+      border: none;
+      padding: 6px 12px;
+      font-family: inherit;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.10em;
+      cursor: pointer;
+      text-decoration: none;
+      text-transform: uppercase;
+    }
+
+    .wrap {
+      padding: 24px;
+      min-height: calc(100vh - 50px);
+      display: flex;
+      gap: 24px;
+      flex-wrap: wrap;
+      align-items: flex-start;
+      justify-content: center;
+    }
+
+    /* —— カード本体（A6縦 = 105 × 148 mm）—— */
+    /* 1mm = 3.7795px @ 96dpi。実物大で表示するために mm 指定で組む */
+    .stage {
+      width: 105mm;
+      height: 148mm;
+      background: var(--paper);
+      position: relative;
+      box-shadow:
+        0 1px 0 rgba(26,20,16,0.08),
+        0 12px 40px rgba(26,20,16,0.20);
+      page-break-after: always;
+      box-sizing: border-box;
+      overflow: hidden;
+    }
+
+    /* 上下の活版風罫 */
+    .stage::before, .stage::after {
+      content: '';
+      position: absolute;
+      left: 5mm; right: 5mm;
+      height: 0.8mm;
+      background: var(--ink);
+    }
+    .stage::before { top: 5mm; }
+    .stage::after  { bottom: 5mm; }
+
+    /* —— 各要素 —— */
+    .header-band {
+      position: absolute;
+      top: 7.5mm; left: 5mm; right: 5mm;
+      font-family: var(--font-mono);
+      font-size: 7pt;
+      letter-spacing: 0.14em;
+      color: var(--ink);
+      font-weight: 500;
+      text-transform: uppercase;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .title-block {
+      position: absolute;
+      top: 17mm; left: 8mm; right: 8mm;
+    }
+    .title-en {
+      font-family: var(--font-mono);
+      font-size: 16pt;
+      font-weight: 700;
+      letter-spacing: 0.10em;
+      color: var(--ink);
+      line-height: 1;
+    }
+    .title-jp {
+      font-family: var(--font-mincho);
+      font-size: 18pt;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      color: var(--ink);
+      line-height: 1.1;
+      margin-top: 2mm;
+    }
+    .title-sub {
+      font-family: var(--font-mincho);
+      font-size: 11pt;
+      color: var(--ink-soft);
+      letter-spacing: 0.06em;
+      margin-top: 2mm;
+    }
+
+    .qr-frame {
+      position: absolute;
+      left: 50%;
+      top: 46mm;
+      transform: translateX(-50%);
+      width: 40mm;
+      height: 40mm;
+      background: var(--paper);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .qr-frame img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      image-rendering: pixelated;
+    }
+
+    .qr-caption {
+      position: absolute;
+      top: 89mm;
+      left: 0; right: 0;
+      text-align: center;
+      font-family: var(--font-mono);
+      font-size: 7.5pt;
+      color: var(--ink-soft);
+      letter-spacing: 0.16em;
+    }
+    .qr-url {
+      position: absolute;
+      top: 93.5mm;
+      left: 0; right: 0;
+      text-align: center;
+      font-family: var(--font-mono);
+      font-size: 9.5pt;
+      font-weight: 700;
+      color: var(--ink);
+      letter-spacing: 0.08em;
+    }
+
+    .rule-dashed {
+      position: absolute;
+      left: 8mm; right: 8mm;
+      height: 0;
+      border-top: 0.4mm dashed var(--rule-soft);
+    }
+    .rule-1 { top: 100mm; }
+    .rule-2 { top: 132mm; }
+
+    .manners {
+      position: absolute;
+      left: 8mm; right: 8mm;
+      top: 102.5mm;
+      font-family: var(--font-body);
+      font-size: 7.7pt;
+      line-height: 1.65;
+      letter-spacing: 0.02em;
+      color: var(--ink);
+    }
+    .manners p { margin: 0 0 1.5mm; }
+
+    .credit {
+      position: absolute;
+      left: 8mm; right: 8mm;
+      top: 135mm;
+      font-family: var(--font-mono);
+      font-size: 7pt;
+      color: var(--ink-soft);
+      letter-spacing: 0.10em;
+      line-height: 1.6;
+    }
+    .credit b { color: var(--ink); font-weight: 700; }
+
+    /* —— 裏面 A: 地図プレビューを薄く —— */
+    .back-a .bg-map {
+      position: absolute;
+      inset: 0;
+      opacity: 0.25;
+      background-image: url('../icons/icon-512.png'); /* 仮代用、本番は地図スクショ推奨 */
+      background-size: cover;
+      background-position: center;
+      filter: grayscale(1) contrast(0.7);
+    }
+    .back-a .center {
+      position: absolute;
+      top: 50%; left: 0; right: 0;
+      transform: translateY(-50%);
+      text-align: center;
+      padding: 0 8mm;
+    }
+    .back-a .label {
+      font-family: var(--font-mono);
+      font-size: 9pt;
+      letter-spacing: 0.20em;
+      color: var(--ink);
+    }
+    .back-a .num {
+      font-family: var(--font-mono);
+      font-size: 38pt;
+      font-weight: 700;
+      color: var(--ink);
+      letter-spacing: 0.02em;
+      line-height: 1;
+      margin: 3mm 0;
+    }
+    .back-a .sub {
+      font-family: var(--font-mincho);
+      font-size: 11pt;
+      color: var(--ink);
+      letter-spacing: 0.06em;
+    }
+
+    /* —— 切り取り線・寸法表示（プレビューだけ） —— */
+    .crop {
+      position: absolute;
+      pointer-events: none;
+    }
+    .crop-lbl {
+      position: absolute;
+      font-family: var(--font-mono);
+      font-size: 9px;
+      color: rgba(26,20,16,0.45);
+      letter-spacing: 0.12em;
+    }
+    .crop-dim-w {
+      bottom: -16px;
+      left: 0; right: 0;
+      text-align: center;
+    }
+    .crop-dim-h {
+      top: 50%;
+      right: -50px;
+      transform: translateY(-50%);
+    }
+
+    .caption {
+      width: 105mm;
+      text-align: center;
+      margin-top: 32px;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--ink);
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      opacity: 0.6;
+    }
+
+    .stage-wrap { position: relative; }
+  </style>
+</head>
+<body>
+  <div class="controls">
+    <span><b>PROOF</b> <span class="pill">A6 PORTRAIT ／ 105 × 148 mm</span></span>
+    <span>1mm = 3.78px ／ 実物大で表示中</span>
+    <button onclick="window.print()">印刷 / PDF保存</button>
+    <a href="SPEC.md" target="_blank">仕様書を見る</a>
+  </div>
+
+  <div class="wrap">
+
+    <!-- ====== 表面 ====== -->
+    <div class="stage-wrap">
+      <div class="stage">
+
+        <div class="header-band">
+          <span>KNNW-2026</span>
+          <span>014 / 14</span>
+        </div>
+
+        <div class="title-block">
+          <div class="title-en">KANNAWA</div>
+          <div class="title-jp">蒸気帯観察記録</div>
+          <div class="title-sub">─ 撮影地マップ</div>
+        </div>
+
+        <div class="qr-frame">
+          <img src="qr-knnw-inked.png" alt="QR https://knnw2026-map.vercel.app/">
+        </div>
+
+        <div class="qr-caption">↑ &nbsp;SCAN ／ TAP</div>
+        <div class="qr-url">knnw2026-map.vercel.app</div>
+
+        <div class="rule-dashed rule-1"></div>
+
+        <div class="manners">
+          <p>撮影地は観察者の記録です。観光地として整備された場所ばかりではないため、地元の方の暮らしを尊重し、静かに歩いてください。</p>
+          <p>位置情報は端末内のみで使用し、外部送信は行いません。</p>
+        </div>
+
+        <div class="rule-dashed rule-2"></div>
+
+        <div class="credit">
+          <div><b>© 2026</b> &nbsp; Etsuko Kanno</div>
+          <div>Beppu, Oita &nbsp;／&nbsp; @beppu_kannawa</div>
+        </div>
+      </div>
+      <div class="crop">
+        <div class="crop-lbl crop-dim-w">105 mm</div>
+        <div class="crop-lbl crop-dim-h">148 mm</div>
+      </div>
+      <div class="caption">A — おもて</div>
+    </div>
+
+    <!-- ====== 裏面 案A: 番号バッジ ====== -->
+    <div class="stage-wrap">
+      <div class="stage back-a">
+        <div class="bg-map"></div>
+        <div class="center">
+          <div class="label">14 ／ 14 SPOTS</div>
+          <div class="num">KNNW</div>
+          <div class="sub">蒸気帯観察記録 ／ 2023</div>
+        </div>
+      </div>
+      <div class="caption">B — うら（任意：番号バッジ案）</div>
+    </div>
+
+  </div>
+
+</body>
+</html>

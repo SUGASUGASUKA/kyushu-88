@@ -3,11 +3,11 @@
   <rect x="6" y="6" width="52" height="52" fill="#1A1410"
         stroke="#FAF6EC" stroke-width="1.2"/>
   <text x="32" y="36" text-anchor="middle"
-        font-family="Consolas, 'Courier New', monospace"
-        font-size="16" font-weight="700" fill="#FAF6EC"
-        letter-spacing="0.5">KNNW</text>
+        font-family="'Shippori Mincho', 'Yu Mincho', 'YuMincho', 'Hiragino Mincho ProN', serif"
+        font-size="14" font-weight="700" fill="#FAF6EC"
+        letter-spacing="2.2">KNNW</text>
   <text x="32" y="50" text-anchor="middle"
-        font-family="Consolas, monospace"
+        font-family="Consolas, 'Courier New', monospace"
         font-size="5" fill="#C9BEA8" letter-spacing="1">2026</text>
   <circle cx="54" cy="10" r="2.6" fill="#C8A24A" stroke="#FAF6EC" stroke-width="0.7"/>
 </svg>

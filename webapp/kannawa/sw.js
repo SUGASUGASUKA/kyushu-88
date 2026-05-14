@@ -6,7 +6,7 @@
  * ============================================================ */
 
 // バージョンを上げるとクライアントは再キャッシュする
-const VERSION    = 'knnw-2026-v2';
+const VERSION    = 'knnw-2026-v3';
 const SHELL_CACHE = `${VERSION}-shell`;
 const TILES_CACHE = `${VERSION}-tiles`;
 

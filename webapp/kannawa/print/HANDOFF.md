@@ -1,0 +1,324 @@
+# claude.ai 引き継ぎ書 ── ZINE 付録カードのデザイン反復用
+
+このドキュメントを **claude.ai の新しいチャット** にまるごとコピペすると、Artifactで実物大プレビューしながらデザイン反復できます。
+
+---
+
+## 0. 使い方（はじめに読む）
+
+1. **claude.ai** を開く → 新規チャット
+2. このドキュメントを**そのまま全部**コピーして貼り付け
+3. 最後に「**↑ このスペックでArtifactを作ってください。実物大プレビューで反復したい。**」と書いて送信
+4. 右側にHTMLプレビューが出る → 「ここをこう変えて」と日本語で指示すれば即反映
+5. 完成したら Artifact 右上の「コピー」で HTML を保存、ローカルでブラウザで開いて印刷
+
+---
+
+## 1. プロジェクト概要
+
+ZINE『**KANNAWA 蒸気帯観察記録 KNNW-2026**』（観察者：Etsuko Kanno、別府・鉄輪温泉の蒸気・湯けむり観察記録、2023年撮影 / 2026年再編集刊行）の**付録としてZINEに挟む紙のカード**。
+
+カードに記載するのは **QRコード**（撮影地マップアプリへのリンク）、**タイトル**、**マナー文章**、**クレジット**。
+
+### 完成イメージのコンセプト
+
+- ZINE本体は明朝＋モノスペースの「観察手帳」風デザイン
+- 鉄輪の蒸気＝灰白〜黄土＝湯気のニュアンスを和紙風クリーム地に墨で
+- 活版印刷を思わせる細い上下罫線で四辺を囲む
+- 計器ログ風の英数字（モノスペース）＋ 大見出しは縦組み映えのする明朝
+
+---
+
+## 2. デザイントークン
+
+### カラーパレット
+
+| ロール | HEX | 用途 |
+|---|---|---|
+| 紙（PAPER） | `#FAF6EC` | 背景の地色 |
+| 墨（INK） | `#1A1410` | 本文・QR・大見出し |
+| 副墨（INK-SOFT） | `#5A4E40` | サブテキスト・キャプション |
+| 罫淡（RULE-SOFT） | `#C9BEA8` | 区切りの点線・薄文字 |
+| VAPOR黄土（任意のアクセント） | `#C8A24A` | 装飾の1点差し色（使うなら最小限） |
+
+### フォント（すべてGoogle Fontsで無料）
+
+| 用途 | フォント | ウェイト |
+|---|---|---|
+| 大見出し・日本語 | **Shippori Mincho（しっぽり明朝）** | 700 (Bold) |
+| 欧文ロゴ・計器ログ表記 | **JetBrains Mono** | 400 / 700 |
+| 本文・マナー文章 | **Noto Sans JP** | 400 / 500 |
+
+### 形状
+
+- 角丸なし（活版印刷の硬さを残す）
+- 角型ピン・四角の枠が ZINE 本体と統一感
+- 線は 0.4mm（薄）〜 0.8mm（濃）
+
+---
+
+## 3. カードの仕様
+
+| 項目 | 値 |
+|---|---|
+| 仕上がりサイズ | **A6 縦 ／ 105 × 148 mm** |
+| 塗り足し | 上下左右 +3 mm |
+| 安全領域 | 仕上がり線から内側 5 mm |
+| 印刷色 | モノクロ（墨1色） |
+| 紙 | 上質紙〜クリームキンマリ |
+
+---
+
+## 4. 載せる要素と配置（A6縦 = 105×148mm）
+
+```
+┌──────────────────────────────────┐ ← y=148
+│ ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ │ y=143 上罫 (1pt 墨)
+│ KNNW-2026          014 / 14      │ y=138 ヘッダー帯 mono 7pt
+│                                  │
+│ KANNAWA                          │ y=124 mono Bold 16pt 字間 0.10em
+│ 蒸気帯観察記録                    │ y=116 しっぽり明朝 Bold 18pt
+│ ─ 撮影地マップ                    │ y=109 しっぽり明朝 12pt（薄墨）
+│                                  │
+│         [QR 40×40mm]             │ y=46〜86 中央配置
+│                                  │
+│         ↑  SCAN ／ TAP            │ y=89  mono 7.5pt 薄墨
+│      knnw2026-map.vercel.app     │ y=93.5 mono Bold 9.5pt 墨
+│                                  │
+│ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─    │ y=100 点線罫 0.4mm K30
+│                                  │
+│ 撮影地は観察者の記録です。観光地と  │ y=102.5 Noto Sans JP 7.7pt
+│ して整備された場所ばかりではない    │ 行間 1.65 字間 0.02em
+│ ため、地元の方の暮らしを尊重し、    │
+│ 静かに歩いてください。            │
+│                                  │
+│ 位置情報は端末内のみで使用し、      │
+│ 外部送信は行いません。            │
+│                                  │
+│ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─    │ y=132 点線罫
+│                                  │
+│ © 2026   Etsuko Kanno            │ y=135 mono 7pt
+│ Beppu, Oita ／ @beppu_kannawa    │
+│                                  │
+│ ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ │ y=5  下罫 (1pt 墨)
+└──────────────────────────────────┘ ← y=0
+```
+
+---
+
+## 5. コピー（そのまま使ってください）
+
+### ヘッダー帯（上）
+```
+KNNW-2026          014 / 14
+```
+
+### 大見出し
+```
+KANNAWA
+蒸気帯観察記録
+─ 撮影地マップ
+```
+
+### QRキャプション
+```
+↑ SCAN ／ TAP
+knnw2026-map.vercel.app
+```
+
+### マナー本文（2段落）
+```
+撮影地は観察者の記録です。観光地として整備された場所ばかりではないため、地元の方の暮らしを尊重し、静かに歩いてください。
+
+位置情報は端末内のみで使用し、外部送信は行いません。
+```
+
+### クレジット
+```
+© 2026   Etsuko Kanno
+Beppu, Oita ／ @beppu_kannawa
+```
+
+---
+
+## 6. QRコード（インラインSVG）
+
+エンコード内容：`https://knnw2026-map.vercel.app/`
+エラー訂正レベル：H（30%復元）
+
+下記SVGをHTML内に**そのまま貼り付け**れば、QRコードがベクトルで表示されます。
+
+```html
+<svg viewBox="0 0 74 74" xmlns="http://www.w3.org/2000/svg" width="40mm" height="40mm">
+  <path fill="#1A1410" d="M4,4H6V6H4zM6,4H8V6H6zM8,4H10V6H8zM10,4H12V6H10zM12,4H14V6H12zM14,4H16V6H14zM16,4H18V6H16zM22,4H24V6H22zM26,4H28V6H26zM30,4H32V6H30zM32,4H34V6H32zM38,4H40V6H38zM40,4H42V6H40zM46,4H48V6H46zM48,4H50V6H48zM52,4H54V6H52zM56,4H58V6H56zM58,4H60V6H58zM60,4H62V6H60zM62,4H64V6H62zM64,4H66V6H64zM66,4H68V6H66zM68,4H70V6H68zM4,6H6V8H4zM16,6H18V8H16zM20,6H22V8H20zM30,6H32V8H30zM32,6H34V8H32zM34,6H36V8H34zM36,6H38V8H36zM38,6H40V8H38zM42,6H44V8H42zM46,6H48V8H46zM56,6H58V8H56zM68,6H70V8H68zM4,8H6V10H4zM8,8H10V10H8zM10,8H12V10H10zM12,8H14V10H12zM16,8H18V10H16zM20,8H22V10H20zM24,8H26V10H24zM26,8H28V10H26zM28,8H30V10H28zM30,8H32V10H30zM32,8H34V10H32zM40,8H42V10H40zM42,8H44V10H42zM44,8H46V10H44zM46,8H48V10H46zM48,8H50V10H48zM52,8H54V10H52zM56,8H58V10H56zM60,8H62V10H60zM62,8H64V10H62zM64,8H66V10H64zM68,8H70V10H68zM4,10H6V12H4zM8,10H10V12H8zM10,10H12V12H10zM12,10H14V12H12zM16,10H18V12H16zM20,10H22V12H20zM22,10H24V12H22zM28,10H30V12H28zM30,10H32V12H30zM40,10H42V12H40zM42,10H44V12H42zM44,10H46V12H44zM46,10H48V12H46zM50,10H52V12H50zM56,10H58V12H56zM60,10H62V12H60zM62,10H64V12H62zM64,10H66V12H64zM68,10H70V12H68zM4,12H6V14H4zM8,12H10V14H8zM10,12H12V14H10zM12,12H14V14H12zM16,12H18V14H16zM20,12H22V14H20zM22,12H24V14H22zM24,12H26V14H24zM26,12H28V14H26zM28,12H30V14H28zM30,12H32V14H30zM40,12H42V14H40zM42,12H44V14H42zM44,12H46V14H44zM46,12H48V14H46zM50,12H52V14H50zM52,12H54V14H52zM56,12H58V14H56zM60,12H62V14H60zM62,12H64V14H62zM64,12H66V14H64zM68,12H70V14H68zM4,14H6V16H4zM16,14H18V16H16zM20,14H22V16H20zM30,14H32V16H30zM32,14H34V16H32zM34,14H36V16H34zM38,14H40V16H38zM40,14H42V16H40zM46,14H48V16H46zM52,14H54V16H52zM56,14H58V16H56zM68,14H70V16H68zM4,16H6V18H4zM6,16H8V18H6zM8,16H10V18H8zM10,16H12V18H10zM12,16H14V18H12zM14,16H16V18H14zM16,16H18V18H16zM20,16H22V18H20zM24,16H26V18H24zM28,16H30V18H28zM32,16H34V18H32zM36,16H38V18H36zM40,16H42V18H40zM44,16H46V18H44zM48,16H50V18H48zM52,16H54V18H52zM56,16H58V18H56zM58,16H60V18H58zM60,16H62V18H60zM62,16H64V18H62zM64,16H66V18H64zM66,16H68V18H66zM68,16H70V18H68zM22,18H24V20H22zM34,18H36V20H34zM36,18H38V20H36zM38,18H40V20H38zM40,18H42V20H40zM42,18H44V20H42zM50,18H52V20H50zM52,18H54V20H52zM8,20H10V22H8zM14,20H16V22H14zM16,20H18V22H16zM18,20H20V22H18zM20,20H22V22H20zM26,20H28V22H26zM32,20H34V22H32zM34,20H36V22H34zM38,20H40V22H38zM40,20H42V22H40zM42,20H44V22H42zM44,20H46V22H44zM54,20H56V22H54zM58,20H60V22H58zM60,20H62V22H60zM62,20H64V22H62zM64,20H66V22H64zM66,20H68V22H66zM10,22H12V24H10zM18,22H20V24H18zM20,22H22V24H20zM28,22H30V24H28zM40,22H42V24H40zM42,22H44V24H42zM46,22H48V24H46zM50,22H52V24H50zM52,22H54V24H52zM54,22H56V24H54zM56,22H58V24H56zM58,22H60V24H58zM62,22H64V24H62zM64,22H66V24H64zM68,22H70V24H68zM8,24H10V26H8zM10,24H12V26H10zM16,24H18V26H16zM22,24H24V26H22zM24,24H26V26H24zM26,24H28V26H26zM30,24H32V26H30zM36,24H38V26H36zM38,24H40V26H38zM50,24H52V26H50zM56,24H58V26H56zM58,24H60V26H58zM60,24H62V26H60zM64,24H66V26H64zM68,24H70V26H68zM6,26H8V28H6zM8,26H10V28H8zM22,26H24V28H22zM24,26H26V28H24zM28,26H30V28H28zM32,26H34V28H32zM38,26H40V28H38zM42,26H44V28H42zM44,26H46V28H44zM46,26H48V28H46zM52,26H54V28H52zM54,26H56V28H54zM56,26H58V28H56zM58,26H60V28H58zM62,26H64V28H62zM66,26H68V28H66zM68,26H70V28H68zM4,28H6V30H4zM6,28H8V30H6zM8,28H10V30H8zM10,28H12V30H10zM12,28H14V30H12zM14,28H16V30H14zM16,28H18V30H16zM18,28H20V30H18zM20,28H22V30H20zM22,28H24V30H22zM24,28H26V30H24zM26,28H28V30H26zM28,28H30V30H28zM30,28H32V30H30zM32,28H34V30H32zM34,28H36V30H34zM40,28H42V30H40zM42,28H44V30H42zM44,28H46V30H44zM46,28H48V30H46zM50,28H52V30H50zM54,28H56V30H54zM56,28H58V30H56zM62,28H64V30H62zM66,28H68V30H66zM8,30H10V32H8zM18,30H20V32H18zM22,30H24V32H22zM24,30H26V32H24zM26,30H28V32H26zM28,30H30V32H28zM32,30H34V32H32zM38,30H40V32H38zM40,30H42V32H40zM42,30H44V32H42zM46,30H48V32H46zM50,30H52V32H50zM54,30H56V32H54zM56,30H58V32H56zM58,30H60V32H58zM62,30H64V32H62zM64,30H66V32H64zM68,30H70V32H68zM4,32H6V34H4zM8,32H10V34H8zM10,32H12V34H10zM12,32H14V34H12zM14,32H16V34H14zM16,32H18V34H16zM18,32H20V34H18zM24,32H26V34H24zM26,32H28V34H26zM28,32H30V34H28zM30,32H32V34H30zM38,32H40V34H38zM44,32H46V34H44zM50,32H52V34H50zM52,32H54V34H52zM60,32H62V34H60zM62,32H64V34H62zM64,32H66V34H64zM68,32H70V34H68zM4,34H6V36H4zM8,34H10V36H8zM10,34H12V36H10zM12,34H14V36H12zM18,34H20V36H18zM20,34H22V36H20zM22,34H24V36H22zM24,34H26V36H24zM30,34H32V36H30zM32,34H34V36H32zM34,34H36V36H34zM48,34H50V36H48zM56,34H58V36H56zM4,36H6V38H4zM16,36H18V38H16zM24,36H26V38H24zM26,36H28V38H26zM30,36H32V38H30zM36,36H38V38H36zM38,36H40V38H38zM42,36H44V38H42zM48,36H50V38H48zM50,36H52V38H50zM56,36H58V38H56zM58,36H60V38H58zM62,36H64V38H62zM66,36H68V38H66zM68,36H70V38H68zM4,38H6V40H4zM10,38H12V40H10zM12,38H14V40H12zM20,38H22V40H20zM24,38H26V40H24zM26,38H28V40H26zM28,38H30V40H28zM38,38H40V40H38zM40,38H42V40H40zM50,38H52V40H50zM54,38H56V40H54zM56,38H58V40H56zM64,38H66V40H64zM68,38H70V40H68zM8,40H10V42H8zM14,40H16V42H14zM16,40H18V42H16zM18,40H20V42H18zM22,40H24V42H22zM26,40H28V42H26zM28,40H30V42H28zM32,40H34V42H32zM38,40H40V42H38zM42,40H44V42H42zM44,40H46V42H44zM50,40H52V42H50zM54,40H56V42H54zM56,40H58V42H56zM58,40H60V42H58zM60,40H62V42H60zM62,40H64V42H62zM64,40H66V42H64zM68,40H70V42H68zM6,42H8V44H6zM10,42H12V44H10zM14,42H16V44H14zM20,42H22V44H20zM22,42H24V44H22zM30,42H32V44H30zM34,42H36V44H34zM38,42H40V44H38zM42,42H44V44H42zM50,42H52V44H50zM62,42H64V44H62zM66,42H68V44H66zM6,44H8V46H6zM8,44H10V46H8zM12,44H14V46H12zM16,44H18V46H16zM18,44H20V46H18zM20,44H22V46H20zM22,44H24V46H22zM24,44H26V46H24zM26,44H28V46H26zM30,44H32V46H30zM32,44H34V46H32zM36,44H38V46H36zM42,44H44V46H42zM48,44H50V46H48zM50,44H52V46H50zM52,44H54V46H52zM56,44H58V46H56zM68,44H70V46H68zM6,46H8V48H6zM8,46H10V48H8zM12,46H14V48H12zM14,46H16V48H14zM18,46H20V48H18zM22,46H24V48H22zM28,46H30V48H28zM30,46H32V48H30zM34,46H36V48H34zM36,46H38V48H36zM40,46H42V48H40zM44,46H46V48H44zM50,46H52V48H50zM54,46H56V48H54zM56,46H58V48H56zM58,46H60V48H58zM62,46H64V48H62zM64,46H66V48H64zM68,46H70V48H68zM4,48H6V50H4zM6,48H8V50H6zM8,48H10V50H8zM10,48H12V50H10zM16,48H18V50H16zM18,48H20V50H18zM22,48H24V50H22zM26,48H28V50H26zM30,48H32V50H30zM34,48H36V50H34zM38,48H40V50H38zM44,48H46V50H44zM48,48H50V50H48zM50,48H52V50H50zM52,48H54V50H52zM54,48H56V50H54zM56,48H58V50H56zM58,48H60V50H58zM62,48H64V50H62zM68,48H70V50H68zM14,50H16V52H14zM20,50H22V52H20zM24,50H26V52H24zM28,50H30V52H28zM34,50H36V52H34zM42,50H44V52H42zM48,50H50V52H48zM58,50H60V52H58zM60,50H62V52H60zM62,50H64V52H62zM66,50H68V52H66zM4,52H6V54H4zM6,52H8V54H6zM10,52H12V54H10zM12,52H14V54H12zM16,52H18V54H16zM20,52H22V54H20zM22,52H24V54H22zM24,52H26V54H24zM26,52H28V54H26zM30,52H32V54H30zM34,52H36V54H34zM36,52H38V54H36zM38,52H40V54H38zM42,52H44V54H42zM44,52H46V54H44zM50,52H52V54H50zM52,52H54V54H52zM54,52H56V54H54zM56,52H58V54H56zM58,52H60V54H58zM60,52H62V54H60zM62,52H64V54H62zM20,54H22V56H20zM22,54H24V56H22zM26,54H28V56H26zM28,54H30V56H28zM32,54H34V56H32zM34,54H36V56H34zM36,54H38V56H36zM38,54H40V56H38zM42,54H44V56H42zM52,54H54V56H52zM60,54H62V56H60zM68,54H70V56H68zM4,56H6V58H4zM6,56H8V58H6zM8,56H10V58H8zM10,56H12V58H10zM12,56H14V58H12zM14,56H16V58H14zM16,56H18V58H16zM20,56H22V58H20zM22,56H24V58H22zM24,56H26V58H24zM26,56H28V58H26zM30,56H32V58H30zM36,56H38V58H36zM44,56H46V58H44zM46,56H48V58H46zM48,56H50V58H48zM52,56H54V58H52zM56,56H58V58H56zM60,56H62V58H60zM64,56H66V58H64zM68,56H70V58H68zM4,58H6V60H4zM16,58H18V60H16zM20,58H22V60H20zM22,58H24V60H22zM24,58H26V60H24zM26,58H28V60H26zM28,58H30V60H28zM32,58H34V60H32zM40,58H42V60H40zM48,58H50V60H48zM50,58H52V60H50zM52,58H54V60H52zM60,58H62V60H60zM62,58H64V60H62zM66,58H68V60H66zM68,58H70V60H68zM4,60H6V62H4zM8,60H10V62H8zM10,60H12V62H10zM12,60H14V62H12zM16,60H18V62H16zM24,60H26V62H24zM28,60H30V62H28zM30,60H32V62H30zM34,60H36V62H34zM36,60H38V62H36zM46,60H48V62H46zM48,60H50V62H48zM50,60H52V62H50zM52,60H54V62H52zM54,60H56V62H54zM56,60H58V62H56zM58,60H60V62H58zM60,60H62V62H60zM4,62H6V64H4zM8,62H10V64H8zM10,62H12V64H10zM12,62H14V64H12zM16,62H18V64H16zM22,62H24V64H22zM24,62H26V64H24zM28,62H30V64H28zM34,62H36V64H34zM36,62H38V64H36zM38,62H40V64H38zM40,62H42V64H40zM42,62H44V64H42zM44,62H46V64H44zM48,62H50V64H48zM52,62H54V64H52zM54,62H56V64H54zM58,62H60V64H58zM60,62H62V64H60zM62,62H64V64H62zM64,62H66V64H64zM68,62H70V64H68zM4,64H6V66H4zM8,64H10V66H8zM10,64H12V66H10zM12,64H14V66H12zM16,64H18V66H16zM20,64H22V66H20zM22,64H24V66H22zM26,64H28V66H26zM28,64H30V66H28zM34,64H36V66H34zM36,64H38V66H36zM38,64H40V66H38zM44,64H46V66H44zM46,64H48V66H46zM52,64H54V66H52zM60,64H62V66H60zM62,64H64V66H62zM66,64H68V66H66zM68,64H70V66H68zM4,66H6V68H4zM16,66H18V68H16zM22,66H24V68H22zM34,66H36V68H34zM36,66H38V68H36zM38,66H40V68H38zM40,66H42V68H40zM42,66H44V68H42zM48,66H50V68H48zM50,66H52V68H50zM52,66H54V68H52zM62,66H64V68H62zM4,68H6V70H4zM6,68H8V70H6zM8,68H10V70H8zM10,68H12V70H10zM12,68H14V70H12zM14,68H16V70H14zM16,68H18V70H16zM22,68H24V70H22zM32,68H34V70H32zM42,68H44V70H42zM44,68H46V70H44zM46,68H48V70H46zM48,68H50V70H48zM50,68H52V70H50zM52,68H54V70H52zM54,68H56V70H54zM60,68H62V70H60zM62,68H64V70H62zM68,68H70V70H68z"/>
+</svg>
+```
+
+---
+
+## 7. スターターHTML（コピペで動く完成形）
+
+claude.ai に渡す前提のスターター。Artifactにこれを貼って、ここから反復するのが速いです。
+
+```html
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>KNNW-2026 付録カード</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Shippori+Mincho:wght@700&family=Noto+Sans+JP:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  @page { size: A6 portrait; margin: 0; }
+  body { margin: 0; background: #E8E2D2; display: flex; justify-content: center; padding: 30px; font-family: 'Noto Sans JP', sans-serif; }
+  .card {
+    width: 105mm; height: 148mm;
+    background: #FAF6EC;
+    position: relative;
+    box-shadow: 0 12px 40px rgba(26,20,16,0.2);
+    overflow: hidden;
+  }
+  .card::before, .card::after {
+    content:''; position: absolute; left: 5mm; right: 5mm; height: 0.8mm; background: #1A1410;
+  }
+  .card::before { top: 5mm; }
+  .card::after  { bottom: 5mm; }
+
+  .band { position: absolute; top: 7.5mm; left: 5mm; right: 5mm; display: flex; justify-content: space-between;
+    font-family: 'JetBrains Mono', monospace; font-size: 7pt; letter-spacing: 0.14em; color: #1A1410; }
+
+  .title { position: absolute; top: 17mm; left: 8mm; right: 8mm; }
+  .title .en { font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 16pt; letter-spacing: 0.10em; line-height: 1; }
+  .title .jp { font-family: 'Shippori Mincho', serif; font-weight: 700; font-size: 18pt; letter-spacing: 0.04em; margin-top: 2mm; }
+  .title .sub { font-family: 'Shippori Mincho', serif; font-size: 11pt; color: #5A4E40; letter-spacing: 0.06em; margin-top: 2mm; }
+
+  .qr { position: absolute; left: 50%; top: 46mm; transform: translateX(-50%); width: 40mm; height: 40mm; }
+  .qr svg { width: 100%; height: 100%; }
+
+  .qr-cap { position: absolute; top: 89mm; left: 0; right: 0; text-align: center;
+    font-family: 'JetBrains Mono', monospace; font-size: 7.5pt; color: #5A4E40; letter-spacing: 0.16em; }
+  .qr-url { position: absolute; top: 93.5mm; left: 0; right: 0; text-align: center;
+    font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 9.5pt; letter-spacing: 0.08em; }
+
+  .rule { position: absolute; left: 8mm; right: 8mm; border-top: 0.4mm dashed #C9BEA8; }
+  .rule.r1 { top: 100mm; } .rule.r2 { top: 132mm; }
+
+  .manners { position: absolute; top: 102.5mm; left: 8mm; right: 8mm;
+    font-size: 7.7pt; line-height: 1.65; letter-spacing: 0.02em; }
+  .manners p { margin: 0 0 1.5mm; }
+
+  .credit { position: absolute; top: 135mm; left: 8mm; right: 8mm;
+    font-family: 'JetBrains Mono', monospace; font-size: 7pt; color: #5A4E40; letter-spacing: 0.10em; line-height: 1.6; }
+  .credit b { color: #1A1410; }
+
+  @media print {
+    body { background: #fff; padding: 0; }
+    .card { box-shadow: none; }
+  }
+</style>
+</head>
+<body>
+  <div class="card">
+    <div class="band"><span>KNNW-2026</span><span>014 / 14</span></div>
+
+    <div class="title">
+      <div class="en">KANNAWA</div>
+      <div class="jp">蒸気帯観察記録</div>
+      <div class="sub">─ 撮影地マップ</div>
+    </div>
+
+    <div class="qr">
+      <!-- ↓ ここに QR SVG をそのままコピペ（上記 6. のSVG） -->
+      <svg viewBox="0 0 74 74" xmlns="http://www.w3.org/2000/svg"><path fill="#1A1410" d="QRのパスデータをここに貼る"/></svg>
+    </div>
+
+    <div class="qr-cap">↑ &nbsp;SCAN ／ TAP</div>
+    <div class="qr-url">knnw2026-map.vercel.app</div>
+
+    <div class="rule r1"></div>
+
+    <div class="manners">
+      <p>撮影地は観察者の記録です。観光地として整備された場所ばかりではないため、地元の方の暮らしを尊重し、静かに歩いてください。</p>
+      <p>位置情報は端末内のみで使用し、外部送信は行いません。</p>
+    </div>
+
+    <div class="rule r2"></div>
+
+    <div class="credit">
+      <div><b>© 2026</b> &nbsp; Etsuko Kanno</div>
+      <div>Beppu, Oita ／ @beppu_kannawa</div>
+    </div>
+  </div>
+</body>
+</html>
+```
+
+---
+
+## 8. 反復用プロンプト集（よく使う指示の例）
+
+claude.ai に投げると即修正してくれるプロンプトのカタログ。コピペでどうぞ。
+
+### レイアウト調整
+- 「タイトルの『蒸気帯観察記録』をもう少し小さくして、`16pt` にしてください」
+- 「QRコードを `45mm` に拡大して、その分マナー文章を縮めて」
+- 「上下の余白がきつく見えるので、上罫線と下罫線をそれぞれ `2mm` ずつ外側に寄せて」
+- 「マナー文章とクレジットの間の余白をもう少し取って、間に小さい『 KNNW-2026 ／ 014 sheets 』の活版風スタンプを入れて」
+
+### 装飾追加
+- 「左上の `KNNW-2026` の下に、観察手帳風に細い波線を1本（蒸気を表現）入れて」
+- 「QRコードの右上に、ZINEのマーカーで使ってる『黄土色のドット（#C8A24A）』を1点、装飾として入れて」
+- 「クレジットの右側に、撮影地の経緯度（33°18'56"N 131°28'40"E）を小さく入れて、フィールドノート感をプラス」
+
+### 別案を見たい
+- 「同じスペックで、横組み（ランドスケープ）版も並べて表示して比較したい」
+- 「裏面（裏に印刷する用）も作って。裏は地図のシルエットを薄く敷いて、中央に『 14 SPOTS 』と大きく」
+- 「タイトルの語順を縦組みにできる？ 大見出しを縦書きで右側に寄せたバージョン」
+
+### 印刷準備
+- 「印刷時用に塗り足し3mmを足したPDF用バージョンを作って、トンボ（crop marks）も加えて」
+- 「モノクロ印刷で確実に出るように、すべての色を K100/K30/K70 のスミ網点にして」
+
+### 微調整
+- 「フォントを『Shippori Mincho B1』にできる？それの方が線が細くて手帳感が出るはず」
+- 「QRの周囲に4mmの白マージンを白いシルエットで強制的に確保して」
+- 「カードの角を1mm丸めて、わずかに紙のドッグイヤー感を演出」
+
+---
+
+## 9. 既存の前提
+
+このカードは ZINE 同梱用なので、以下の前提があります：
+
+- 印刷部数：小〜中ロット（数十〜数百枚）
+- 印刷方法：オンデマンドまたは自宅レーザー想定
+- 紙：上質紙〜書籍用紙クリーム系
+- 配布シーン：ZINE 購入者がZINE本体と一緒に開封 → QRをスキャン → スマホで撮影地マップを見る
+- **このカードの裏面**はオプション（白でもOK、別案を入れてもOK）
+
+---
+
+## 10. デザインを変えても変えてほしくない要素
+
+| 変えていいもの | 変えたくないもの |
+|---|---|
+| 配置・余白・字間・文字サイズ | コピー文章の意味（マナーの内容） |
+| 装飾追加・別案探索 | URL：`knnw2026-map.vercel.app` |
+| フォントの細かいバージョン違い | © 2026 Etsuko Kanno |
+| 縦組み／横組み／2面構成 | ZINE本体の色（#1A1410 と #FAF6EC） |
+| 裏面のデザイン | QRコードの内容（変更すると別物） |
+| アクセントカラーの導入 | ─ |
+
+---
+
+## 最初の指示として送るテンプレート
+
+```
+このZINE付録カードのスペックでArtifactを作ってください。
+A6縦・実物大プレビューしながら反復したいです。
+スターターHTMLは「7. スターターHTML」のを使って、QR SVGは「6. QRコード」のものを<svg>タグごとコピーで入れてください。
+
+完成したら、まず印刷プレビュー風に1枚表示し、その下に「装飾を1点だけ入れた別案」も並べて見せてください。例えば、QRコードの右上に黄土色（#C8A24A）の小さなドットを1つ。
+```
+
+これで Artifact が動き出します。あとはチャットで「ここをこう」と指示するだけ。
+
