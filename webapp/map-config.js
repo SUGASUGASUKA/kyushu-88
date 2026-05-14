@@ -17,7 +17,7 @@ var MAP_CONFIG = {
   //   'gsi'     地理院タイル  （山・登山・ハイキング向け）
   //   'mapbox'  Mapbox Light  （シンプルおしゃれ・観光PR向け）
   mapTile     : 'osm',
-  mapboxToken : '',   // mapbox 選択時のみ入力
+  mapboxToken : 'pk.eyJ1IjoiaGFjaGloYWNoaTg4IiwiYSI6ImNtcDRzaWw4bTBzbGoycm9hdmtmZHVuNHQifQ.JeR32__gTh36TllufAJtAA',
 
   // -------- デザインキット ----------------------------------
   //   'field-notes'    記録帳・和紙・アースカラー（温泉・神社・巡礼）
@@ -97,7 +97,7 @@ var _DESIGN_KITS = {
   //  Palette: ink #0E0E0E / white #FFFFFF / accent #D6442C / gray #8A8A8A
   // ----------------------------------------------------------
   'swiss-minimal': {
-    mapTile:      'osm',
+    mapTile:      'mapbox',
     bgPage:       '#FFFFFF',
     bgCard:       '#FFFFFF',
     bgHeader:     '#FFFFFF',
