@@ -2,6 +2,7 @@
 *.py
 *.json
 !webapp/*.json
+!webapp/**/*.json
 !vercel.json
 
 # ローカル作業ファイル

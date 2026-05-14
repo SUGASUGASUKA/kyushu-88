@@ -6,7 +6,7 @@
  * ============================================================ */
 
 // バージョンを上げるとクライアントは再キャッシュする
-const VERSION    = 'knnw-2026-v3';
+const VERSION    = 'knnw-2026-v4';
 const SHELL_CACHE = `${VERSION}-shell`;
 const TILES_CACHE = `${VERSION}-tiles`;
 
@@ -18,10 +18,10 @@ const SHELL_ASSETS = [
   'map-config.js',
   'kannawa-data.js',
   'manifest.json',
-  'favicon.svg',
-  'icons/icon-192.png',
-  'icons/icon-512.png',
-  'icons/apple-touch-icon.png',
+  'favicon.svg?v=3',
+  'icons/icon-192.png?v=3',
+  'icons/icon-512.png?v=3',
+  'icons/apple-touch-icon.png?v=3',
   // 写真サムネ（軽い・全ピンに必要）
   'photos/KNNW_01_th.jpg', 'photos/KNNW_02_th.jpg', 'photos/KNNW_03_th.jpg',
   'photos/KNNW_04_th.jpg', 'photos/KNNW_05_th.jpg', 'photos/KNNW_06_th.jpg',
