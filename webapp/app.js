@@ -476,18 +476,17 @@ function renderPanel() {
       b.textContent = popFilterMap[b.dataset.filter] || b.textContent;
     });
   } else if (MAP_CONFIG.designKit === 'swiss-minimal') {
-    document.getElementById('panel-title').textContent = 'INDEX';
-    document.getElementById('panel-count').textContent = '';
-    var swStats = document.getElementById('sw-stats');
-    if (swStats) {
-      swStats.innerHTML =
-        '<div class="sw-stat"><div class="sw-stat-num">' + tot + '</div><div class="sw-stat-label">ALL</div></div>'
-        + '<div class="sw-stat"><div class="sw-stat-num">' + (tot - n) + '</div><div class="sw-stat-label">PENDING</div></div>'
-        + '<div class="sw-stat"><div class="sw-stat-num">' + n + '</div><div class="sw-stat-label">VISITED</div></div>';
-    }
-    var swFilterMap = { all: 'ALL', unvisited: 'PENDING', visited: 'VISITED' };
+    var swFilterDefs = {
+      all:       { label: 'ALL',     count: tot },
+      unvisited: { label: 'PENDING', count: tot - n },
+      visited:   { label: 'VISITED', count: n },
+    };
     document.querySelectorAll('.filter-btn').forEach(function(b) {
-      b.textContent = swFilterMap[b.dataset.filter] || b.textContent;
+      var def = swFilterDefs[b.dataset.filter];
+      if (def) {
+        b.innerHTML = '<span class="sw-filter-num">' + def.count + '</span>'
+                    + '<span class="sw-filter-label">' + def.label + '</span>';
+      }
     });
   } else if (MAP_CONFIG.designKit === 'retro-travel') {
     document.getElementById('panel-title').textContent = '';

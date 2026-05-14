@@ -1159,69 +1159,44 @@
       background: #0E0E0E; border-color: #0E0E0E;
     }
 
-    /* フィルター */
-    [data-kit="swiss-minimal"] #panel-filter {
-      border-bottom: 1px solid #EEEEEE;
-      padding-bottom: 10px;
-    }
-    [data-kit="swiss-minimal"] .filter-btn {
-      border-radius: 0;
-      border: 1.5px solid #EEEEEE;
-      font-weight: 700; font-size: 10px;
-      letter-spacing: 0.1em; text-transform: uppercase;
-      padding: 5px 12px;
-      font-family: 'Inter', 'Helvetica Neue', Helvetica, Arial, sans-serif;
-    }
-    [data-kit="swiss-minimal"] .filter-btn.active {
-      background: transparent;
-      border-color: #D6442C; color: #D6442C;
-    }
+    /* 一覧パネル: Flex縦積み（ヘッダー非表示・フィルターに統計統合） */
+    [data-kit="swiss-minimal"] #panel { flex-direction: column; overflow: hidden; }
+    [data-kit="swiss-minimal"] #panel-header { display: none; }
+    [data-kit="swiss-minimal"] #panel-count { display: none; }
+    #sw-stats { display: none; }
 
-    /* 一覧パネル: Flex縦積み（ヘッダー固定・リストスクロール） */
-    [data-kit="swiss-minimal"] #panel {
-      flex-direction: column;
-      overflow: hidden;
-    }
-    [data-kit="swiss-minimal"] #panel-header {
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 12px;
-      padding: 16px 20px 14px;
+    /* フィルター＆統計: 3カラムグリッドに統合 */
+    [data-kit="swiss-minimal"] #panel-filter {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
       border-bottom: 1.5px solid #0E0E0E;
+      padding: 0;
+      gap: 0;
       flex-shrink: 0;
     }
-    [data-kit="swiss-minimal"] #panel-title {
-      font-family: 'Inter', 'Helvetica Neue', Helvetica, Arial, sans-serif;
-      font-size: 10px;
-      font-weight: 700;
-      letter-spacing: 0.22em;
-      color: #8A8A8A;
-      text-transform: uppercase;
-    }
-    [data-kit="swiss-minimal"] #panel-count { display: none; }
-    /* sw-stats: 統計ブロック（swiss-minimal 専用） */
-    #sw-stats { display: none; }
-    [data-kit="swiss-minimal"] #sw-stats {
-      display: flex;
-      gap: 24px;
-      align-items: flex-end;
-    }
-    .sw-stat {
+    [data-kit="swiss-minimal"] .filter-btn {
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 1px;
+      gap: 3px;
+      padding: 14px 8px 12px;
+      border: none;
+      border-right: 1px solid #EEEEEE;
+      border-radius: 0;
+      background: transparent;
+      cursor: pointer;
     }
-    .sw-stat-num {
+    [data-kit="swiss-minimal"] .filter-btn:last-child { border-right: none; }
+    [data-kit="swiss-minimal"] .sw-filter-num {
       font-family: 'Inter', 'Helvetica Neue', Helvetica, Arial, sans-serif;
-      font-size: 32px;
+      font-size: 28px;
       font-weight: 400;
       color: #0E0E0E;
       letter-spacing: -0.04em;
       font-variant-numeric: tabular-nums;
       line-height: 1;
     }
-    .sw-stat-label {
+    [data-kit="swiss-minimal"] .sw-filter-label {
       font-family: 'Inter', 'Helvetica Neue', Helvetica, Arial, sans-serif;
       font-size: 9px;
       font-weight: 700;
@@ -1229,7 +1204,8 @@
       color: #8A8A8A;
       text-transform: uppercase;
     }
-    [data-kit="swiss-minimal"] #panel-filter { flex-shrink: 0; }
+    [data-kit="swiss-minimal"] .filter-btn.active .sw-filter-num { color: #D6442C; }
+    [data-kit="swiss-minimal"] .filter-btn.active .sw-filter-label { color: #D6442C; }
     [data-kit="swiss-minimal"] #panel-list {
       flex: 1;
       overflow-y: auto;
