@@ -16,7 +16,7 @@ var MAP_CONFIG = {
   //   'osm'     OpenStreetMap（標準・街・観光地向け）
   //   'gsi'     地理院タイル  （山・登山・ハイキング向け）
   //   'mapbox'  Mapbox Light  （シンプルおしゃれ・観光PR向け）
-  mapTile     : 'gsi',
+  mapTile     : 'osm',
   mapboxToken : '',   // mapbox 選択時のみ入力
 
   // -------- デザインキット ----------------------------------
@@ -25,7 +25,7 @@ var MAP_CONFIG = {
   //   'retro-travel'   昭和旅情・朱色・活版印刷（鉄道・道の駅・レトロ巡り）
   //   'expedition'     探検図・オリーブ・測量感（登山・ツーリング・MTB）
   //   'pop-pilgrimage' 推し活・ビビッド・丸ゴシック（聖地巡礼・カフェ・イベント）
-  designKit : 'field-notes',
+  designKit : 'swiss-minimal',
 
   // -------- マーカーアイコン（絵文字）-----------------------
   //  温泉   ♨      神社   ⛩     城・寺  🏯
