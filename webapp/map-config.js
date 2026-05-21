@@ -8,6 +8,13 @@ var MAP_CONFIG = {
   appName   : '九州八十八湯マップ',   // ヘッダーに表示するタイトル
   totalCount: 160,                    // スタンプの総数
 
+  // -------- スプレッドシート連携 --------------------------------
+  //  Googleスプレッドシートの「リンクを知っている全員が閲覧可」に設定後、
+  //  下記URLを貼り付けるとアプリ起動時にスプシからスポットデータを取得します。
+  //  空文字 '' にするとonsen-data.jsの静的データを使用します。
+  //  ※スプシの列順: id / onsenti / shisetsu / address / lat / lng
+  sheetsUrl : 'https://docs.google.com/spreadsheets/d/1vN1IYQxZv4vvimJEZm0Agf3arrP7ksUtfUBUG8zCoNg/export?format=csv',
+
   // -------- 地図の初期位置 -----------------------------------
   mapCenter : [32.5, 131.0],
   mapZoom   : 7,

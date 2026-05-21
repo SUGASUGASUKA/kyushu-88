@@ -1,5 +1,5 @@
 // Service Worker - オフライン対応・ホーム画面追加を有効にする
-var CACHE_NAME = 'onsen88-v65';
+var CACHE_NAME = 'onsen88-v66';
 
 // 同一オリジン：HTTP キャッシュを無視して常に最新を取得
 var CACHE_INTERNAL = [

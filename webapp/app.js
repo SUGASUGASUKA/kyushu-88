@@ -881,10 +881,75 @@ function showToast(msg) {
   });
 })();
 
+// ===== スプレッドシートCSV取得・パース =====
+function splitCSVRow(row) {
+  var result = [], inQuote = false, current = '';
+  for (var i = 0; i < row.length; i++) {
+    var c = row[i];
+    if (c === '"') {
+      if (inQuote && row[i + 1] === '"') { current += '"'; i++; }
+      else { inQuote = !inQuote; }
+    } else if (c === ',' && !inQuote) {
+      result.push(current.trim()); current = '';
+    } else { current += c; }
+  }
+  result.push(current.trim());
+  return result;
+}
+
+function parseCSV(text) {
+  var lines = text.trim().split(/\r?\n/);
+  if (lines.length < 2) return null;
+  var headers = lines[0].split(',').map(function(h) { return h.trim(); });
+  var result = [];
+  for (var i = 1; i < lines.length; i++) {
+    if (!lines[i].trim()) continue;
+    var cols = splitCSVRow(lines[i]);
+    var obj = {};
+    headers.forEach(function(h, idx) { obj[h] = (cols[idx] || '').trim(); });
+    obj.lat = parseFloat(obj.lat);
+    obj.lng = parseFloat(obj.lng);
+    if (!obj.id || isNaN(obj.lat) || isNaN(obj.lng)) continue;
+    result.push(obj);
+  }
+  return result.length > 0 ? result : null;
+}
+
+function fetchSheetsData(url) {
+  return fetch(url, { cache: 'no-cache' })
+    .then(function(res) {
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      return res.text();
+    })
+    .then(function(text) { return parseCSV(text); });
+}
+
 // ===== 起動 =====
 loadVisited();
-addMarkers();
-updateProgress();
+
+function initApp() {
+  addMarkers();
+  updateProgress();
+}
+
+if (MAP_CONFIG.sheetsUrl) {
+  fetchSheetsData(MAP_CONFIG.sheetsUrl)
+    .then(function(data) {
+      if (data) {
+        ONSEN_DATA = data;
+        console.log('[Sheets] ' + data.length + '件のデータを取得しました');
+      } else {
+        console.warn('[Sheets] データ取得失敗 → 静的データを使用');
+      }
+      initApp();
+    })
+    .catch(function(err) {
+      console.warn('[Sheets] fetch エラー:', err.message, '→ 静的データを使用');
+      initApp();
+    });
+} else {
+  initApp();
+}
 
 // ピンチズーム中はbackdrop-filterを無効化して描画を軽くする
 map.on('zoomstart', function() { document.body.classList.add('map-zooming'); });
